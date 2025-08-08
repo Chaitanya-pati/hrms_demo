@@ -1,0 +1,1159 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS - Human Resource Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1976D2',
+                        secondary: '#424242',
+                        accent: '#FF9800',
+                        success: '#4CAF50',
+                        warning: '#FF9800',
+                        error: '#F44336',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- @COMPONENT: MainLayout -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <!-- @COMPONENT: Sidebar -->
+        <div id="sidebar" class="bg-white w-64 shadow-lg fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-6 border-b">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800">HRMS</h1>
+                </div>
+                <button id="sidebarClose" class="lg:hidden text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="mt-6">
+                <div class="px-6 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">MAIN</p>
+                </div>
+                <a href="#" data-section="dashboard" class="nav-item active flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-chart-line w-5 mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#" data-section="employees" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-users w-5 mr-3"></i>
+                    Employees
+                </a>
+                <a href="#" data-section="departments" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-building w-5 mr-3"></i>
+                    Departments
+                </a>
+                <a href="#" data-section="attendance" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-clock w-5 mr-3"></i>
+                    Attendance
+                </a>
+                <a href="#" data-section="leave" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-calendar-alt w-5 mr-3"></i>
+                    Leave Management
+                </a>
+                <a href="#" data-section="payroll" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-dollar-sign w-5 mr-3"></i>
+                    Payroll
+                </a>
+                <a href="#" data-section="performance" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-trophy w-5 mr-3"></i>
+                    Performance
+                </a>
+                
+                <div class="px-6 mt-8 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">TOOLS</p>
+                </div>
+                <a href="#" id="exportBtn" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-download w-5 mr-3"></i>
+                    Export Data
+                </a>
+                <a href="#" id="backupBtn" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-cloud-upload-alt w-5 mr-3"></i>
+                    Backup & Restore
+                </a>
+            </nav>
+        </div>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-64">
+            <!-- Header -->
+            <!-- @COMPONENT: Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button id="sidebarToggle" class="lg:hidden text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h2 id="pageTitle" class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="p-2 text-gray-400 hover:text-gray-600 relative">
+                                <i class="fas fa-bell text-lg"></i>
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=40&h=40" alt="Admin Profile" class="w-8 h-8 rounded-full">
+                            <div class="hidden md:block">
+                                <p class="text-sm font-medium text-gray-700">John Admin</p>
+                                <p class="text-xs text-gray-500">HR Manager</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- @END_COMPONENT: Header -->
+
+            <!-- Content Area -->
+            <main class="p-6 overflow-y-auto" style="height: calc(100vh - 80px);">
+                <!-- Dashboard Section -->
+                <!-- @COMPONENT: Dashboard -->
+                <div id="dashboard-section" class="section active">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100">
+                                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Total Employees</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.totalEmployees">248</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-100">
+                                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Present Today</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.presentToday">237</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100">
+                                    <i class="fas fa-calendar-times text-yellow-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">On Leave</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.onLeave">11</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-100">
+                                    <i class="fas fa-building text-purple-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Departments</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.departments">12</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Attendance Overview</h3>
+                            <canvas id="attendanceChart" width="400" height="200"></canvas>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Department Distribution</h3>
+                            <canvas id="departmentChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold text-gray-800">Recent Activities</h3>
+                        </div>
+                        <div class="p-6">
+                            <!-- @MAP: recentActivities.map(activity => ( -->
+                            <div class="flex items-start space-x-4 py-3 border-b last:border-b-0">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user-plus text-white text-xs"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900" data-mock="true">New employee Sarah Johnson joined Marketing Department</p>
+                                    <p class="text-xs text-gray-500" data-mock="true">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 py-3 border-b last:border-b-0">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-white text-xs"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900" data-mock="true">Leave request approved for Michael Brown</p>
+                                    <p class="text-xs text-gray-500" data-mock="true">4 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 py-3 border-b last:border-b-0">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-clock text-white text-xs"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900" data-mock="true">Payroll processed for October 2023</p>
+                                    <p class="text-xs text-gray-500" data-mock="true">1 day ago</p>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Dashboard -->
+
+                <!-- Employees Section -->
+                <!-- @COMPONENT: EmployeeManagement -->
+                <div id="employees-section" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Employee Management</h3>
+                            <button id="addEmployeeBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                <i class="fas fa-plus mr-2"></i>Add Employee
+                            </button>
+                        </div>
+                        
+                        <!-- Search and Filter -->
+                        <div class="p-6 border-b bg-gray-50">
+                            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                                <div class="flex-1">
+                                    <input type="text" id="employeeSearch" placeholder="Search employees..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                </div>
+                                <select id="departmentFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="">All Departments</option>
+                                    <option value="engineering">Engineering</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="sales">Sales</option>
+                                    <option value="hr">Human Resources</option>
+                                </select>
+                                <button id="printEmployees" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+                                    <i class="fas fa-print mr-2"></i>Print
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Employee Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="id">
+                                            ID <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="name">
+                                            Name <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="email">
+                                            Email <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="department">
+                                            Department <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="position">
+                                            Position <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- @MAP: employees.map(employee => ( -->
+                                    <tr data-mock="true">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">EMP001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=40&h=40" alt="Employee">
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">john.doe@company.com</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Engineering</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Senior Developer</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                            <button class="text-primary hover:text-blue-700 edit-employee" data-id="1">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900 delete-employee" data-id="1">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- @END_MAP )) -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="px-6 py-3 border-t bg-gray-50 flex items-center justify-between">
+                            <div class="text-sm text-gray-500">
+                                Showing 1 to 10 of 248 results
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100">Previous</button>
+                                <button class="px-3 py-1 bg-primary text-white rounded text-sm">1</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100">2</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100">3</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: EmployeeManagement -->
+
+                <!-- Departments Section -->
+                <div id="departments-section" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Department Management</h3>
+                            <button id="addDepartmentBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                <i class="fas fa-plus mr-2"></i>Add Department
+                            </button>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- @MAP: departments.map(department => ( -->
+                                <div class="border rounded-lg p-6 hover:shadow-md transition-shadow duration-200" data-mock="true">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h4 class="text-lg font-semibold text-gray-800">Engineering</h4>
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-blue-700">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <p class="text-sm text-gray-600"><strong>Manager:</strong> Sarah Wilson</p>
+                                        <p class="text-sm text-gray-600"><strong>Employees:</strong> 45</p>
+                                        <p class="text-sm text-gray-600"><strong>Budget:</strong> $2,500,000</p>
+                                        <div class="mt-4">
+                                            <h5 class="text-sm font-medium text-gray-700 mb-2">Positions:</h5>
+                                            <div class="flex flex-wrap gap-2">
+                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Senior Developer</span>
+                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Junior Developer</span>
+                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">DevOps Engineer</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div id="attendance-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Daily Attendance</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center space-x-4 mb-6">
+                                    <input type="date" id="attendanceDate" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <button id="markAttendanceBtn" class="bg-success text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-200">
+                                        <i class="fas fa-check mr-2"></i>Mark Present
+                                    </button>
+                                    <button id="viewReportsBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+                                        <i class="fas fa-chart-bar mr-2"></i>View Reports
+                                    </button>
+                                </div>
+                                
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check In</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check Out</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hours</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            <tr data-mock="true">
+                                                <td class="px-4 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=40&h=40" alt="Employee">
+                                                        <div class="ml-3">
+                                                            <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">09:00 AM</td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">06:00 PM</td>
+                                                <td class="px-4 py-4 whitespace-nowrap">
+                                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Present</span>
+                                                </td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">9.0</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Attendance Summary</h3>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                                    <span class="text-sm font-medium text-green-800">Present</span>
+                                    <span class="text-lg font-bold text-green-600">237</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                                    <span class="text-sm font-medium text-red-800">Absent</span>
+                                    <span class="text-lg font-bold text-red-600">11</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
+                                    <span class="text-sm font-medium text-yellow-800">Late</span>
+                                    <span class="text-lg font-bold text-yellow-600">8</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                                    <span class="text-sm font-medium text-blue-800">On Leave</span>
+                                    <span class="text-lg font-bold text-blue-600">11</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leave Management Section -->
+                <div id="leave-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">Leave Requests</h3>
+                                <button id="applyLeaveBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                    <i class="fas fa-plus mr-2"></i>Apply Leave
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">From</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">To</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr data-mock="true">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <img class="h-8 w-8 rounded-full" src="https://pixabay.com/get/g186b82dd1244a9ebc6c97f09c47e7ebb68587e129a5811a1b1b4d8ede8f31a9c8e5a6b48cbffb31dcd3b94c1b21515303161ca3cec61d03fe88fc368473ff368_1280.jpg" alt="Employee">
+                                                    <div class="ml-3">
+                                                        <div class="text-sm font-medium text-gray-900">Jane Smith</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Annual Leave</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-11-15</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-11-20</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Pending</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                                <button class="text-green-600 hover:text-green-900 approve-leave" data-id="1">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-900 reject-leave" data-id="1">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Leave Balance</h3>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="border rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600">Annual Leave</span>
+                                        <span class="text-sm font-bold text-gray-800">15/25</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600">Sick Leave</span>
+                                        <span class="text-sm font-bold text-gray-800">8/12</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-red-600 h-2 rounded-full" style="width: 67%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600">Personal Leave</span>
+                                        <span class="text-sm font-bold text-gray-800">3/5</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-600 h-2 rounded-full" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payroll Section -->
+                <div id="payroll-section" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Payroll Management</h3>
+                            <div class="space-x-2">
+                                <button id="generatePayrollBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                    <i class="fas fa-calculator mr-2"></i>Generate Payroll
+                                </button>
+                                <button id="exportPayrollBtn" class="bg-success text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-200">
+                                    <i class="fas fa-download mr-2"></i>Export
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 border-b bg-gray-50">
+                            <div class="flex items-center space-x-4">
+                                <select id="payrollMonth" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="10">October 2023</option>
+                                    <option value="11">November 2023</option>
+                                    <option value="12">December 2023</option>
+                                </select>
+                                <input type="text" id="payrollSearch" placeholder="Search employees..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Base Salary</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Allowances</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Deductions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Net Pay</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr data-mock="true">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=40&h=40" alt="Employee">
+                                                <div class="ml-3">
+                                                    <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                                    <div class="text-sm text-gray-500">Senior Developer</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$8,500</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$1,200</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$950</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$8,750</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Processed</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                            <button class="text-primary hover:text-blue-700 view-payslip" data-id="1">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900 print-payslip" data-id="1">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Section -->
+                <div id="performance-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">Performance Reviews</h3>
+                                <button id="addReviewBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                    <i class="fas fa-plus mr-2"></i>New Review
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Review Period</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Score</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr data-mock="true">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=40&h=40" alt="Employee">
+                                                    <div class="ml-3">
+                                                        <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                                        <div class="text-sm text-gray-500">Senior Developer</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Q3 2023</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <span class="text-sm font-medium text-gray-900 mr-2">4.2/5.0</span>
+                                                    <div class="flex text-yellow-400">
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="far fa-star"></i>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Completed</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                                <button class="text-primary hover:text-blue-700 view-review" data-id="1">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="text-gray-600 hover:text-gray-900 edit-review" data-id="1">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Performance Metrics</h3>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="border rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600">Excellent (4.5-5.0)</span>
+                                        <span class="text-sm font-bold text-green-600">25%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-600 h-2 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600">Good (3.5-4.4)</span>
+                                        <span class="text-sm font-bold text-blue-600">45%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600">Average (2.5-3.4)</span>
+                                        <span class="text-sm font-bold text-yellow-600">25%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-yellow-600 h-2 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600">Below Average (1.0-2.4)</span>
+                                        <span class="text-sm font-bold text-red-600">5%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-red-600 h-2 rounded-full" style="width: 5%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MainLayout -->
+
+    <!-- Modal Overlays -->
+    
+    <!-- Employee Modal -->
+    <!-- @COMPONENT: EmployeeModal -->
+    <div id="employeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <h3 id="employeeModalTitle" class="text-lg font-semibold text-gray-800">Add New Employee</h3>
+                    <button id="closeEmployeeModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <form id="employeeForm" class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                        <input type="text" id="firstName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                        <input type="text" id="lastName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                        <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                        <input type="tel" id="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Department *</label>
+                        <select id="department" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">Select Department</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="sales">Sales</option>
+                            <option value="hr">Human Resources</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Position *</label>
+                        <input type="text" id="position" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hire Date *</label>
+                        <input type="date" id="hireDate" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Salary *</label>
+                        <input type="number" id="salary" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                    <textarea id="address" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancelEmployee" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">Cancel</button>
+                    <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">Save Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: EmployeeModal -->
+
+    <!-- Loading Overlay -->
+    <!-- @COMPONENT: LoadingOverlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span class="text-gray-700 font-medium">Processing...</span>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoadingOverlay -->
+
+    <script>
+        (function() {
+            // TODO: Implement business logic, API calls, and state management for production
+            
+            // Mock data structure for demo
+            const mockData = {
+                employees: [
+                    {
+                        id: 1,
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        email: 'john.doe@company.com',
+                        phone: '+1234567890',
+                        department: 'engineering',
+                        position: 'Senior Developer',
+                        hireDate: '2022-01-15',
+                        salary: 85000,
+                        address: '123 Main St, City, State 12345'
+                    }
+                ],
+                departments: [
+                    {
+                        id: 1,
+                        name: 'Engineering',
+                        manager: 'Sarah Wilson',
+                        employees: 45,
+                        budget: 2500000,
+                        positions: ['Senior Developer', 'Junior Developer', 'DevOps Engineer']
+                    }
+                ],
+                attendance: [],
+                leaves: [],
+                payroll: [],
+                performance: []
+            };
+
+            // Initialize local storage if empty
+            function initializeData() {
+                if (!localStorage.getItem('hrms_data')) {
+                    localStorage.setItem('hrms_data', JSON.stringify(mockData));
+                }
+            }
+
+            // Navigation functionality
+            function initializeNavigation() {
+                const navItems = document.querySelectorAll('.nav-item');
+                const sections = document.querySelectorAll('.section');
+                const pageTitle = document.getElementById('pageTitle');
+
+                navItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetSection = item.getAttribute('data-section');
+                        
+                        // Update active nav item
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        item.classList.add('active');
+                        
+                        // Show target section
+                        sections.forEach(section => {
+                            section.classList.add('hidden');
+                            section.classList.remove('active');
+                        });
+                        
+                        const targetElement = document.getElementById(targetSection + '-section');
+                        if (targetElement) {
+                            targetElement.classList.remove('hidden');
+                            targetElement.classList.add('active');
+                        }
+                        
+                        // Update page title
+                        const titles = {
+                            'dashboard': 'Dashboard',
+                            'employees': 'Employee Management',
+                            'departments': 'Department Management',
+                            'attendance': 'Attendance Tracking',
+                            'leave': 'Leave Management',
+                            'payroll': 'Payroll Management',
+                            'performance': 'Performance Management'
+                        };
+                        pageTitle.textContent = titles[targetSection] || 'Dashboard';
+                        
+                        // Close sidebar on mobile
+                        if (window.innerWidth < 1024) {
+                            toggleSidebar(false);
+                        }
+                    });
+                });
+            }
+
+            // Sidebar toggle functionality
+            function initializeSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const sidebarToggle = document.getElementById('sidebarToggle');
+                const sidebarClose = document.getElementById('sidebarClose');
+
+                function toggleSidebar(show = null) {
+                    if (show === null) {
+                        sidebar.classList.toggle('-translate-x-full');
+                    } else if (show) {
+                        sidebar.classList.remove('-translate-x-full');
+                    } else {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                }
+
+                sidebarToggle.addEventListener('click', () => toggleSidebar());
+                sidebarClose.addEventListener('click', () => toggleSidebar(false));
+
+                // Close sidebar when clicking outside on mobile
+                document.addEventListener('click', (e) => {
+                    if (window.innerWidth < 1024 && 
+                        !sidebar.contains(e.target) && 
+                        !sidebarToggle.contains(e.target)) {
+                        toggleSidebar(false);
+                    }
+                });
+
+                window.toggleSidebar = toggleSidebar;
+            }
+
+            // Employee modal functionality
+            function initializeEmployeeModal() {
+                const modal = document.getElementById('employeeModal');
+                const addBtn = document.getElementById('addEmployeeBtn');
+                const closeBtn = document.getElementById('closeEmployeeModal');
+                const cancelBtn = document.getElementById('cancelEmployee');
+                const form = document.getElementById('employeeForm');
+
+                function showModal() {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+
+                function hideModal() {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    form.reset();
+                }
+
+                addBtn.addEventListener('click', showModal);
+                closeBtn.addEventListener('click', hideModal);
+                cancelBtn.addEventListener('click', hideModal);
+
+                // Close modal when clicking outside
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        hideModal();
+                    }
+                });
+
+                // Form submission
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    showLoading();
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        hideLoading();
+                        hideModal();
+                        showNotification('Employee added successfully!', 'success');
+                    }, 1500);
+                });
+            }
+
+            // Loading overlay
+            function showLoading() {
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+                document.getElementById('loadingOverlay').classList.add('flex');
+            }
+
+            function hideLoading() {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                document.getElementById('loadingOverlay').classList.remove('flex');
+            }
+
+            // Notification system
+            function showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+                
+                const colors = {
+                    success: 'bg-green-500 text-white',
+                    error: 'bg-red-500 text-white',
+                    warning: 'bg-yellow-500 text-white',
+                    info: 'bg-blue-500 text-white'
+                };
+                
+                notification.className += ` ${colors[type] || colors.info}`;
+                notification.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span>${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Animate in
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-full');
+                }, 100);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    notification.classList.add('translate-x-full');
+                    setTimeout(() => notification.remove(), 300);
+                }, 5000);
+            }
+
+            // Initialize charts
+            function initializeCharts() {
+                // Attendance Chart
+                const attendanceCtx = document.getElementById('attendanceChart');
+                if (attendanceCtx) {
+                    new Chart(attendanceCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            datasets: [{
+                                label: 'Present',
+                                data: [235, 240, 238, 245, 230, 120, 85],
+                                borderColor: '#1976D2',
+                                backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Department Chart
+                const departmentCtx = document.getElementById('departmentChart');
+                if (departmentCtx) {
+                    new Chart(departmentCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Engineering', 'Marketing', 'Sales', 'HR', 'Finance'],
+                            datasets: [{
+                                data: [45, 35, 40, 15, 20],
+                                backgroundColor: [
+                                    '#1976D2',
+                                    '#FF9800',
+                                    '#4CAF50',
+                                    '#F44336',
+                                    '#9C27B0'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            }
+
+            // Export functionality
+            function initializeExport() {
+                const exportBtn = document.getElementById('exportBtn');
+                exportBtn.addEventListener('click', () => {
+                    showLoading();
+                    setTimeout(() => {
+                        hideLoading();
+                        showNotification('Data exported successfully!', 'success');
+                    }, 2000);
+                });
+            }
+
+            // Backup functionality
+            function initializeBackup() {
+                const backupBtn = document.getElementById('backupBtn');
+                backupBtn.addEventListener('click', () => {
+                    showLoading();
+                    setTimeout(() => {
+                        hideLoading();
+                        showNotification('Backup completed successfully!', 'success');
+                    }, 3000);
+                });
+            }
+
+            // Print functionality
+            function initializePrint() {
+                const printBtns = document.querySelectorAll('[id$="print"], [class*="print-"]');
+                printBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        showNotification('Print functionality would be implemented here', 'info');
+                    });
+                });
+            }
+
+            // Search and filter functionality
+            function initializeSearch() {
+                const searchInputs = document.querySelectorAll('[id$="Search"]');
+                searchInputs.forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        // TODO: Implement search functionality
+                        console.log('Searching for:', e.target.value);
+                    });
+                });
+            }
+
+            // Make functions globally available
+            window.showLoading = showLoading;
+            window.hideLoading = hideLoading;
+            window.showNotification = showNotification;
+
+            // Initialize everything when DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeData();
+                initializeNavigation();
+                initializeSidebar();
+                initializeEmployeeModal();
+                initializeCharts();
+                initializeExport();
+                initializeBackup();
+                initializePrint();
+                initializeSearch();
+                
+                console.log('HRMS Application initialized successfully');
+            });
+        })();
+    </script>
+</body>
+</html>

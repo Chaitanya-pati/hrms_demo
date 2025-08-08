@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS - Human Resource Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.css">
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Main Layout -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white w-64 shadow-lg fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-6 border-b">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800">HRMS</h1>
+                </div>
+                <button id="sidebarClose" class="lg:hidden text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="mt-6 overflow-y-auto" style="max-height: calc(100vh - 120px);">
+                <!-- Core HR Modules -->
+                <div class="px-6 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">CORE HR</p>
+                </div>
+                <a href="#" data-section="dashboard" data-testid="nav-dashboard" class="nav-item active flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-chart-line w-5 mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#" data-section="employees" data-testid="nav-employees" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-users w-5 mr-3"></i>
+                    Employee Management
+                </a>
+                <a href="#" data-section="recruitment" data-testid="nav-recruitment" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-user-plus w-5 mr-3"></i>
+                    Recruitment & Onboarding
+                </a>
+                <a href="#" data-section="departments" data-testid="nav-departments" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-building w-5 mr-3"></i>
+                    Organization Structure
+                </a>
+
+                <!-- Time & Attendance -->
+                <div class="px-6 mt-8 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">TIME & ATTENDANCE</p>
+                </div>
+                <a href="#" data-section="attendance" data-testid="nav-attendance" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-clock w-5 mr-3"></i>
+                    Time & Attendance
+                </a>
+                <a href="#" data-section="shifts" data-testid="nav-shifts" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-calendar-week w-5 mr-3"></i>
+                    Shift Management
+                </a>
+                <a href="#" data-section="leave" data-testid="nav-leave" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-calendar-alt w-5 mr-3"></i>
+                    Leave Management
+                </a>
+
+                <!-- Payroll & Benefits -->
+                <div class="px-6 mt-8 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">PAYROLL & BENEFITS</p>
+                </div>
+                <a href="#" data-section="payroll" data-testid="nav-payroll" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-dollar-sign w-5 mr-3"></i>
+                    Payroll Processing
+                </a>
+                <a href="#" data-section="benefits" data-testid="nav-benefits" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-shield-alt w-5 mr-3"></i>
+                    Benefits Administration
+                </a>
+                <a href="#" data-section="expenses" data-testid="nav-expenses" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-receipt w-5 mr-3"></i>
+                    Expense Management
+                </a>
+
+                <!-- Performance & Development -->
+                <div class="px-6 mt-8 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">PERFORMANCE</p>
+                </div>
+                <a href="#" data-section="performance" data-testid="nav-performance" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-trophy w-5 mr-3"></i>
+                    Performance Management
+                </a>
+                <a href="#" data-section="learning" data-testid="nav-learning" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-graduation-cap w-5 mr-3"></i>
+                    Learning & Development
+                </a>
+                <a href="#" data-section="talent" data-testid="nav-talent" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-star w-5 mr-3"></i>
+                    Talent Management
+                </a>
+
+                <!-- Employee Engagement -->
+                <div class="px-6 mt-8 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">ENGAGEMENT</p>
+                </div>
+                <a href="#" data-section="engagement" data-testid="nav-engagement" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-heart w-5 mr-3"></i>
+                    Employee Engagement
+                </a>
+                <a href="#" data-section="communication" data-testid="nav-communication" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-comments w-5 mr-3"></i>
+                    Communication Hub
+                </a>
+
+                <!-- Analytics & Compliance -->
+                <div class="px-6 mt-8 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">ANALYTICS</p>
+                </div>
+                <a href="#" data-section="analytics" data-testid="nav-analytics" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-chart-bar w-5 mr-3"></i>
+                    HR Analytics
+                </a>
+                <a href="#" data-section="compliance" data-testid="nav-compliance" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-gavel w-5 mr-3"></i>
+                    Compliance Management
+                </a>
+
+                <!-- Self Service -->
+                <div class="px-6 mt-8 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">SELF SERVICE</p>
+                </div>
+                <a href="#" data-section="ess" data-testid="nav-ess" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-user-cog w-5 mr-3"></i>
+                    Employee Self Service
+                </a>
+                <a href="#" data-section="mss" data-testid="nav-mss" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-users-cog w-5 mr-3"></i>
+                    Manager Self Service
+                </a>
+
+                <!-- System Tools -->
+                <div class="px-6 mt-8 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">SYSTEM</p>
+                </div>
+                <a href="#" data-section="settings" data-testid="nav-settings" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-cog w-5 mr-3"></i>
+                    System Configuration
+                </a>
+                <a href="#" id="exportBtn" data-testid="button-export" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-download w-5 mr-3"></i>
+                    Export & Reports
+                </a>
+                <a href="#" id="backupBtn" data-testid="button-backup" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors duration-200">
+                    <i class="fas fa-cloud-upload-alt w-5 mr-3"></i>
+                    Backup & Restore
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-64">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button id="sidebarToggle" data-testid="button-sidebar-toggle" class="lg:hidden text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h2 id="pageTitle" data-testid="text-page-title" class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="p-2 text-gray-400 hover:text-gray-600 relative" data-testid="button-notifications">
+                                <i class="fas fa-bell text-lg"></i>
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" data-testid="text-notification-count">3</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=40&h=40" alt="Admin Profile" class="w-8 h-8 rounded-full" data-testid="img-profile-avatar">
+                            <div class="hidden md:block">
+                                <p class="text-sm font-medium text-gray-700" data-testid="text-profile-name">John Admin</p>
+                                <p class="text-xs text-gray-500" data-testid="text-profile-role">HR Manager</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="p-6 overflow-y-auto" style="height: calc(100vh - 80px);">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="section active">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100">
+                                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Total Employees</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-testid="stat-total-employees" id="totalEmployeesStat">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-100">
+                                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Present Today</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-testid="stat-present-today" id="presentTodayStat">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100">
+                                    <i class="fas fa-calendar-times text-yellow-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">On Leave</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-testid="stat-on-leave" id="onLeaveStat">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-100">
+                                    <i class="fas fa-building text-purple-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Departments</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-testid="stat-departments" id="departmentsStat">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Attendance Overview</h3>
+                            <canvas id="attendanceChart" width="400" height="200"></canvas>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Department Distribution</h3>
+                            <canvas id="departmentChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold text-gray-800">Recent Activities</h3>
+                        </div>
+                        <div class="p-6" id="recentActivitiesContainer">
+                            <div class="text-center text-gray-500 py-8" id="noActivitiesMessage">
+                                <i class="fas fa-clock text-4xl mb-4"></i>
+                                <p>No recent activities</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employees Section -->
+                <div id="employees-section" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Employee Management</h3>
+                            <button id="addEmployeeBtn" data-testid="button-add-employee" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                <i class="fas fa-plus mr-2"></i>Add Employee
+                            </button>
+                        </div>
+                        
+                        <!-- Search and Filter -->
+                        <div class="p-6 border-b bg-gray-50">
+                            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                                <div class="flex-1">
+                                    <input type="text" id="employeeSearch" data-testid="input-employee-search" placeholder="Search employees..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                </div>
+                                <select id="departmentFilter" data-testid="select-department-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="">All Departments</option>
+                                    <option value="engineering">Engineering</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="sales">Sales</option>
+                                    <option value="hr">Human Resources</option>
+                                    <option value="finance">Finance</option>
+                                </select>
+                                <button id="printEmployees" data-testid="button-print-employees" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+                                    <i class="fas fa-print mr-2"></i>Print
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Employee Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="id" data-testid="sort-employee-id">
+                                            ID <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="name" data-testid="sort-employee-name">
+                                            Name <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="email" data-testid="sort-employee-email">
+                                            Email <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="department" data-testid="sort-employee-department">
+                                            Department <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" data-sort="position" data-testid="sort-employee-position">
+                                            Position <i class="fas fa-sort ml-1"></i>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeTableBody" data-testid="table-employees" class="bg-white divide-y divide-gray-200">
+                                    <tr id="noEmployeesRow">
+                                        <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                            <i class="fas fa-users text-4xl mb-4"></i>
+                                            <p>No employees found</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="px-6 py-3 border-t bg-gray-50 flex items-center justify-between">
+                            <div class="text-sm text-gray-500" id="employeePaginationInfo" data-testid="text-pagination-info">
+                                Showing 0 to 0 of 0 results
+                            </div>
+                            <div class="flex space-x-2" id="employeePagination">
+                                <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100" data-testid="button-pagination-previous" disabled>Previous</button>
+                                <button class="px-3 py-1 bg-primary text-white rounded text-sm" data-testid="button-pagination-1">1</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100" data-testid="button-pagination-next" disabled>Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Departments Section -->
+                <div id="departments-section" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Department Management</h3>
+                            <button id="addDepartmentBtn" data-testid="button-add-department" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                <i class="fas fa-plus mr-2"></i>Add Department
+                            </button>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="departmentsContainer">
+                                <div class="text-center text-gray-500 py-8 col-span-full" id="noDepartmentsMessage">
+                                    <i class="fas fa-building text-4xl mb-4"></i>
+                                    <p>No departments found</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div id="attendance-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Daily Attendance</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center space-x-4 mb-6">
+                                    <input type="date" id="attendanceDate" data-testid="input-attendance-date" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <button id="markAttendanceBtn" data-testid="button-mark-attendance" class="bg-success text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-200">
+                                        <i class="fas fa-check mr-2"></i>Mark Present
+                                    </button>
+                                    <button id="viewReportsBtn" data-testid="button-view-reports" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+                                        <i class="fas fa-chart-bar mr-2"></i>View Reports
+                                    </button>
+                                </div>
+                                
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check In</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check Out</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hours</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="attendanceTableBody" data-testid="table-attendance" class="divide-y divide-gray-200">
+                                            <tr>
+                                                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                                                    <i class="fas fa-clock text-4xl mb-4"></i>
+                                                    <p>No attendance records for today</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Attendance Summary</h3>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                                    <span class="text-sm font-medium text-green-800">Present</span>
+                                    <span class="text-lg font-bold text-green-600" data-testid="stat-attendance-present" id="attendancePresentStat">0</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                                    <span class="text-sm font-medium text-red-800">Absent</span>
+                                    <span class="text-lg font-bold text-red-600" data-testid="stat-attendance-absent" id="attendanceAbsentStat">0</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
+                                    <span class="text-sm font-medium text-yellow-800">Late</span>
+                                    <span class="text-lg font-bold text-yellow-600" data-testid="stat-attendance-late" id="attendanceLateStat">0</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                                    <span class="text-sm font-medium text-blue-800">On Leave</span>
+                                    <span class="text-lg font-bold text-blue-600" data-testid="stat-attendance-on-leave" id="attendanceOnLeaveStat">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leave Management Section -->
+                <div id="leave-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">Leave Requests</h3>
+                                <button id="applyLeaveBtn" data-testid="button-apply-leave" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                    <i class="fas fa-plus mr-2"></i>Apply Leave
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">From</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">To</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="leaveTableBody" data-testid="table-leave" class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                                <i class="fas fa-calendar-alt text-4xl mb-4"></i>
+                                                <p>No leave requests found</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Leave Balance</h3>
+                            </div>
+                            <div class="p-6 space-y-4" id="leaveBalanceContainer">
+                                <div class="text-center text-gray-500 py-8">
+                                    <i class="fas fa-calendar-check text-4xl mb-4"></i>
+                                    <p>No leave balance data</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payroll Section -->
+                <div id="payroll-section" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Payroll Management</h3>
+                            <div class="space-x-2">
+                                <button id="generatePayrollBtn" data-testid="button-generate-payroll" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                    <i class="fas fa-calculator mr-2"></i>Generate Payroll
+                                </button>
+                                <button id="exportPayrollBtn" data-testid="button-export-payroll" class="bg-success text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-200">
+                                    <i class="fas fa-download mr-2"></i>Export
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 border-b bg-gray-50">
+                            <div class="flex items-center space-x-4">
+                                <select id="payrollMonth" data-testid="select-payroll-month" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="10">October 2023</option>
+                                    <option value="11">November 2023</option>
+                                    <option value="12">December 2023</option>
+                                </select>
+                                <input type="text" id="payrollSearch" data-testid="input-payroll-search" placeholder="Search employees..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Base Salary</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Allowances</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Deductions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Net Pay</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payrollTableBody" data-testid="table-payroll" class="divide-y divide-gray-200">
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                            <i class="fas fa-dollar-sign text-4xl mb-4"></i>
+                                            <p>No payroll records found</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Section -->
+                <div id="performance-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">Performance Reviews</h3>
+                                <button id="addReviewBtn" data-testid="button-add-review" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                    <i class="fas fa-plus mr-2"></i>New Review
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Review Period</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Score</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="performanceTableBody" data-testid="table-performance" class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                                <i class="fas fa-trophy text-4xl mb-4"></i>
+                                                <p>No performance reviews found</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Performance Metrics</h3>
+                            </div>
+                            <div class="p-6 space-y-4" id="performanceMetricsContainer">
+                                <div class="text-center text-gray-500 py-8">
+                                    <i class="fas fa-chart-bar text-4xl mb-4"></i>
+                                    <p>No performance metrics data</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recruitment & Onboarding Section -->
+                <div id="recruitment-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100">
+                                    <i class="fas fa-user-plus text-blue-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Open Positions</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="openPositionsStat">5</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-100">
+                                    <i class="fas fa-file-alt text-green-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Applications</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="applicationsStat">127</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-sm p-6 border">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100">
+                                    <i class="fas fa-handshake text-yellow-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">This Month Hires</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="newHiresStat">8</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Job Postings</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4" id="jobPostingsList">
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium text-gray-800">Senior Software Engineer</h4>
+                                        <p class="text-sm text-gray-600">Engineering • Posted 3 days ago</p>
+                                        <p class="text-sm text-gray-500 mt-2">15 applications • 3 in review</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Recent Applications</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4" id="recentApplicationsList">
+                                    <div class="flex items-center justify-between border-b pb-3">
+                                        <div>
+                                            <p class="font-medium text-gray-800">Sarah Johnson</p>
+                                            <p class="text-sm text-gray-600">Senior Software Engineer</p>
+                                        </div>
+                                        <span class="status-badge pending">Under Review</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shifts Management Section -->
+                <div id="shifts-section" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Shift Management</h3>
+                            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                <i class="fas fa-plus mr-2"></i>Create Shift
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div class="border rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-800 mb-2">Morning Shift</h4>
+                                    <p class="text-sm text-gray-600">9:00 AM - 5:00 PM</p>
+                                    <p class="text-sm text-gray-500 mt-2">25 employees assigned</p>
+                                </div>
+                                <div class="border rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-800 mb-2">Evening Shift</h4>
+                                    <p class="text-sm text-gray-600">2:00 PM - 10:00 PM</p>
+                                    <p class="text-sm text-gray-500 mt-2">18 employees assigned</p>
+                                </div>
+                                <div class="border rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-800 mb-2">Night Shift</h4>
+                                    <p class="text-sm text-gray-600">10:00 PM - 6:00 AM</p>
+                                    <p class="text-sm text-gray-500 mt-2">12 employees assigned</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benefits Administration Section -->
+                <div id="benefits-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Insurance Plans</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium text-gray-800">Health Insurance</h4>
+                                        <p class="text-sm text-gray-600">Premium plan with full coverage</p>
+                                        <p class="text-sm text-gray-500 mt-2">45 employees enrolled</p>
+                                    </div>
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium text-gray-800">Dental Insurance</h4>
+                                        <p class="text-sm text-gray-600">Comprehensive dental coverage</p>
+                                        <p class="text-sm text-gray-500 mt-2">38 employees enrolled</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Retirement Benefits</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium text-gray-800">401(k) Plan</h4>
+                                        <p class="text-sm text-gray-600">Company matching up to 6%</p>
+                                        <p class="text-sm text-gray-500 mt-2">42 employees participating</p>
+                                    </div>
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium text-gray-800">Provident Fund</h4>
+                                        <p class="text-sm text-gray-600">Employee contribution: 12%</p>
+                                        <p class="text-sm text-gray-500 mt-2">All employees enrolled</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expense Management Section -->
+                <div id="expenses-section" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Expense Claims</h3>
+                            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                <i class="fas fa-plus mr-2"></i>New Claim
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">John Smith</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Travel</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$450.00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-01-15</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="status-badge pending">Pending</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-blue-600 hover:text-blue-900 mr-3">View</button>
+                                            <button class="text-green-600 hover:text-green-900 mr-3">Approve</button>
+                                            <button class="text-red-600 hover:text-red-900">Reject</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning & Development Section -->
+                <div id="learning-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Training Programs</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium text-gray-800">Leadership Development</h4>
+                                        <p class="text-sm text-gray-600">12-week program for managers</p>
+                                        <p class="text-sm text-gray-500 mt-2">8 participants • Starting Feb 1</p>
+                                    </div>
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium text-gray-800">Technical Skills Workshop</h4>
+                                        <p class="text-sm text-gray-600">Advanced JavaScript & React</p>
+                                        <p class="text-sm text-gray-500 mt-2">15 participants • In Progress</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Skills Assessment</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">JavaScript</span>
+                                        <span class="text-sm text-gray-500">Average: 8.2/10</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 82%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Talent Management Section -->
+                <div id="talent-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">High Performers</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Sarah Johnson</span>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Top 5%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Mike Chen</span>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Top 10%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Career Plans</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <div class="text-sm">
+                                        <p class="font-medium text-gray-700">Development Plans Active</p>
+                                        <p class="text-gray-500">23 employees</p>
+                                    </div>
+                                    <div class="text-sm">
+                                        <p class="font-medium text-gray-700">Promotions This Year</p>
+                                        <p class="text-gray-500">8 employees</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Succession Planning</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <div class="text-sm">
+                                        <p class="font-medium text-gray-700">Key Positions Covered</p>
+                                        <p class="text-gray-500">85% coverage</p>
+                                    </div>
+                                    <div class="text-sm">
+                                        <p class="font-medium text-gray-700">Ready Successors</p>
+                                        <p class="text-gray-500">12 identified</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Engagement Section -->
+                <div id="engagement-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Engagement Score</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="text-center">
+                                    <div class="text-4xl font-bold text-green-600 mb-2">8.2</div>
+                                    <p class="text-gray-600">Overall Engagement Score</p>
+                                    <p class="text-sm text-gray-500 mt-2">↑ 0.3 from last quarter</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Recent Surveys</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">Q4 Pulse Survey</span>
+                                        <span class="text-sm text-gray-500">87% response</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">Annual Engagement</span>
+                                        <span class="text-sm text-gray-500">93% response</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold text-gray-800">Recognition & Rewards</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-blue-600 mb-2">24</div>
+                                    <p class="text-sm text-gray-600">Recognitions This Month</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600 mb-2">$5,200</div>
+                                    <p class="text-sm text-gray-600">Rewards Distributed</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-purple-600 mb-2">3</div>
+                                    <p class="text-sm text-gray-600">Employee of the Month</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Communication Hub Section -->
+                <div id="communication-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Announcements</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="border-l-4 border-blue-500 pl-4">
+                                        <h4 class="font-medium text-gray-800">New Health Benefits</h4>
+                                        <p class="text-sm text-gray-600">Enhanced medical coverage starting next month</p>
+                                        <p class="text-xs text-gray-500 mt-1">Posted 2 days ago</p>
+                                    </div>
+                                    <div class="border-l-4 border-green-500 pl-4">
+                                        <h4 class="font-medium text-gray-800">Team Building Event</h4>
+                                        <p class="text-sm text-gray-600">Annual company retreat scheduled for March</p>
+                                        <p class="text-xs text-gray-500 mt-1">Posted 1 week ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Employee Directory</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1494790108755-2616b68e4827?w=32&h=32&fit=crop&crop=face" alt="Employee" class="w-8 h-8 rounded-full">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">Sarah Johnson</p>
+                                            <p class="text-xs text-gray-500">Engineering Manager</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face" alt="Employee" class="w-8 h-8 rounded-full">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">Mike Chen</p>
+                                            <p class="text-xs text-gray-500">Senior Developer</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HR Analytics Section -->
+                <div id="analytics-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Workforce Analytics</h3>
+                            </div>
+                            <div class="p-6">
+                                <canvas id="workforceChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Attrition Analysis</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">Turnover Rate</span>
+                                        <span class="text-sm font-bold text-red-600">12.5%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">Voluntary Exits</span>
+                                        <span class="text-sm text-gray-600">8 employees</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">Average Tenure</span>
+                                        <span class="text-sm text-gray-600">3.2 years</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold text-gray-800">Key HR Metrics</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-blue-600 mb-2">94%</div>
+                                    <p class="text-sm text-gray-600">Employee Satisfaction</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600 mb-2">87%</div>
+                                    <p class="text-sm text-gray-600">Training Completion</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-yellow-600 mb-2">2.3</div>
+                                    <p class="text-sm text-gray-600">Avg. Performance Score</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-purple-600 mb-2">15 days</div>
+                                    <p class="text-sm text-gray-600">Avg. Time to Hire</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance Management Section -->
+                <div id="compliance-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Compliance Status</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Labor Law Compliance</span>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Compliant</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Tax Compliance</span>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Up to Date</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Safety Regulations</span>
+                                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Review Needed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Audit Trail</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-700">Policy Update</span>
+                                        <span class="text-gray-500">2 days ago</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-700">Payroll Processing</span>
+                                        <span class="text-gray-500">1 week ago</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-700">Employee Data Export</span>
+                                        <span class="text-gray-500">2 weeks ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Self Service Section -->
+                <div id="ess-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">My Profile</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="text-center mb-4">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" alt="Profile" class="w-20 h-20 rounded-full mx-auto mb-4">
+                                    <h4 class="font-medium text-gray-800">John Admin</h4>
+                                    <p class="text-sm text-gray-600">HR Manager</p>
+                                </div>
+                                <button class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                    Update Profile
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">My Leave Balance</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-700">Annual Leave</span>
+                                        <span class="text-sm font-medium text-gray-900">15 days</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-700">Sick Leave</span>
+                                        <span class="text-sm font-medium text-gray-900">8 days</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-700">Personal Leave</span>
+                                        <span class="text-sm font-medium text-gray-900">3 days</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Quick Actions</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <button class="w-full text-left py-2 px-3 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                        <i class="fas fa-calendar-plus text-blue-600 mr-2"></i>
+                                        Apply for Leave
+                                    </button>
+                                    <button class="w-full text-left py-2 px-3 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                        <i class="fas fa-file-alt text-green-600 mr-2"></i>
+                                        Download Payslip
+                                    </button>
+                                    <button class="w-full text-left py-2 px-3 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                        <i class="fas fa-clock text-yellow-600 mr-2"></i>
+                                        View Attendance
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manager Self Service Section -->
+                <div id="mss-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Team Overview</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">Total Team Members</span>
+                                        <span class="text-lg font-bold text-gray-900">12</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">Present Today</span>
+                                        <span class="text-lg font-bold text-green-600">11</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">On Leave</span>
+                                        <span class="text-lg font-bold text-yellow-600">1</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Pending Approvals</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between py-2 border-b">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">Sarah's Leave Request</p>
+                                            <p class="text-xs text-gray-500">Annual Leave - 3 days</p>
+                                        </div>
+                                        <div class="space-x-2">
+                                            <button class="text-green-600 hover:text-green-900 text-sm">Approve</button>
+                                            <button class="text-red-600 hover:text-red-900 text-sm">Reject</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between py-2 border-b">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">Mike's Expense Claim</p>
+                                            <p class="text-xs text-gray-500">Travel - $320.00</p>
+                                        </div>
+                                        <div class="space-x-2">
+                                            <button class="text-green-600 hover:text-green-900 text-sm">Approve</button>
+                                            <button class="text-red-600 hover:text-red-900 text-sm">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border mt-6">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold text-gray-800">Team Performance</h3>
+                        </div>
+                        <div class="p-6">
+                            <canvas id="teamPerformanceChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Configuration Section -->
+                <div id="settings-section" class="section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">General Settings</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                                        <input type="text" value="HRMS Company" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Time Zone</label>
+                                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                            <option>UTC-5 (Eastern)</option>
+                                            <option>UTC-8 (Pacific)</option>
+                                            <option>UTC+0 (GMT)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Work Week</label>
+                                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                            <option>Monday - Friday</option>
+                                            <option>Sunday - Thursday</option>
+                                            <option>Custom</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border">
+                            <div class="p-6 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">User Management</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Active Users</span>
+                                        <span class="text-sm text-gray-600">47</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Admin Users</span>
+                                        <span class="text-sm text-gray-600">3</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Manager Users</span>
+                                        <span class="text-sm text-gray-600">8</span>
+                                    </div>
+                                    <button class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                        <i class="fas fa-user-plus mr-2"></i>Add New User
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Overlays -->
+    
+    <!-- Employee Modal -->
+    <div id="employeeModal" data-testid="modal-employee" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <h3 id="employeeModalTitle" data-testid="text-modal-title" class="text-lg font-semibold text-gray-800">Add New Employee</h3>
+                    <button id="closeEmployeeModal" data-testid="button-close-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <form id="employeeForm" data-testid="form-employee" class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                        <input type="text" id="firstName" data-testid="input-first-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                        <input type="text" id="lastName" data-testid="input-last-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                        <input type="email" id="email" data-testid="input-email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                        <input type="tel" id="phone" data-testid="input-phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Department *</label>
+                        <select id="department" data-testid="select-department" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">Select Department</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="sales">Sales</option>
+                            <option value="hr">Human Resources</option>
+                            <option value="finance">Finance</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Position *</label>
+                        <input type="text" id="position" data-testid="input-position" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hire Date *</label>
+                        <input type="date" id="hireDate" data-testid="input-hire-date" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Salary *</label>
+                        <input type="number" id="salary" data-testid="input-salary" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                    <textarea id="address" data-testid="textarea-address" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancelEmployee" data-testid="button-cancel-employee" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">Cancel</button>
+                    <button type="submit" data-testid="button-save-employee" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">Save Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Department Modal -->
+    <div id="departmentModal" data-testid="modal-department" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <h3 id="departmentModalTitle" data-testid="text-department-modal-title" class="text-lg font-semibold text-gray-800">Add New Department</h3>
+                    <button id="closeDepartmentModal" data-testid="button-close-department-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <form id="departmentForm" data-testid="form-department" class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Department Name *</label>
+                        <input type="text" id="departmentName" data-testid="input-department-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Manager *</label>
+                        <input type="text" id="departmentManager" data-testid="input-department-manager" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Budget</label>
+                        <input type="number" id="departmentBudget" data-testid="input-department-budget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="departmentDescription" data-testid="textarea-department-description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancelDepartment" data-testid="button-cancel-department" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">Cancel</button>
+                    <button type="submit" data-testid="button-save-department" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">Save Department</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leave Modal -->
+    <div id="leaveModal" data-testid="modal-leave" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <h3 id="leaveModalTitle" data-testid="text-leave-modal-title" class="text-lg font-semibold text-gray-800">Apply for Leave</h3>
+                    <button id="closeLeaveModal" data-testid="button-close-leave-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <form id="leaveForm" data-testid="form-leave" class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Employee *</label>
+                        <select id="leaveEmployee" data-testid="select-leave-employee" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">Select Employee</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Leave Type *</label>
+                        <select id="leaveType" data-testid="select-leave-type" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">Select Leave Type</option>
+                            <option value="annual">Annual Leave</option>
+                            <option value="sick">Sick Leave</option>
+                            <option value="personal">Personal Leave</option>
+                            <option value="maternity">Maternity Leave</option>
+                            <option value="emergency">Emergency Leave</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">From Date *</label>
+                        <input type="date" id="leaveFromDate" data-testid="input-leave-from-date" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">To Date *</label>
+                        <input type="date" id="leaveToDate" data-testid="input-leave-to-date" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+                        <textarea id="leaveReason" data-testid="textarea-leave-reason" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Reason for leave..."></textarea>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancelLeave" data-testid="button-cancel-leave" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">Cancel</button>
+                    <button type="submit" data-testid="button-save-leave" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">Apply Leave</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Performance Review Modal -->
+    <div id="performanceModal" data-testid="modal-performance" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <h3 id="performanceModalTitle" data-testid="text-performance-modal-title" class="text-lg font-semibold text-gray-800">New Performance Review</h3>
+                    <button id="closePerformanceModal" data-testid="button-close-performance-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <form id="performanceForm" data-testid="form-performance" class="p-6">
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Employee *</label>
+                            <select id="performanceEmployee" data-testid="select-performance-employee" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Select Employee</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Review Period *</label>
+                            <input type="text" id="performancePeriod" data-testid="input-performance-period" required placeholder="e.g. Q4 2023" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Overall Score (1-5) *</label>
+                        <input type="number" id="performanceScore" data-testid="input-performance-score" required min="1" max="5" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Goals Achieved</label>
+                        <textarea id="performanceGoals" data-testid="textarea-performance-goals" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="List goals achieved during this period..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Areas for Improvement</label>
+                        <textarea id="performanceImprovement" data-testid="textarea-performance-improvement" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Areas that need improvement..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Comments</label>
+                        <textarea id="performanceComments" data-testid="textarea-performance-comments" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Additional comments..."></textarea>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancelPerformance" data-testid="button-cancel-performance" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">Cancel</button>
+                    <button type="submit" data-testid="button-save-performance" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">Save Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" data-testid="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span class="text-gray-700 font-medium">Processing...</span>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script src="/src/script.js"></script>
+</body>
+</html>
