@@ -1,0 +1,369 @@
+@model BookingViewModel
+
+<style>
+    :root {
+        --primary-color: #667eea;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --light-bg: #f8f9fa;
+        --border-color: #dee2e6;
+        --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid var(--border-color);
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .btn-custom {
+        border-radius: 25px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, var(--primary-color), #764ba2);
+        color: white;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+        color: white;
+    }
+
+    .selection-summary {
+        background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .room-selection-btn {
+        position: relative;
+    }
+
+    .room-selection-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--warning-color);
+        color: #000;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+</style>
+
+<div class="modal-body">
+    <form id="bookingForm">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="CustomerName" class="form-label">
+                    <i class="fas fa-user me-1"></i>Customer Name
+                </label>
+                <input type="text" class="form-control" id="CustomerName" name="CustomerName" 
+                       placeholder="Enter your name" value="@Model?.CustomerName" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="CustomerEmail" class="form-label">
+                    <i class="fas fa-envelope me-1"></i>Email
+                </label>
+                <input type="email" class="form-control" id="CustomerEmail" name="CustomerEmail" 
+                       placeholder="Enter your email" value="@Model?.CustomerEmail" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="CustomerPhone" class="form-label">
+                    <i class="fas fa-phone me-1"></i>Phone
+                </label>
+                <input type="text" class="form-control" id="CustomerPhone" name="CustomerPhone" 
+                       placeholder="Enter phone number" value="@Model?.CustomerPhone" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="BookingRange" class="form-label">
+                    <i class="fas fa-calendar me-1"></i>Booking Date Range
+                </label>
+                <input type="text" class="form-control" id="BookingRange" 
+                       placeholder="Select booking date range" required />
+                <input type="hidden" id="BookingDateFrom" name="BookingDateFrom" 
+                       value="@(Model?.BookingDateFrom.ToString("yyyy-MM-dd"))" />
+                <input type="hidden" id="BookingDateTo" name="BookingDateTo" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="HomeId" class="form-label">
+                    <i class="fas fa-home me-1"></i>Select Home
+                </label>
+                <select class="form-select" id="HomeId" name="HomeId" required>
+                    <option value="">-- Select Home --</option>
+                    @if (Model?.AvailableHomes != null)
+                    {
+                        foreach (var home in Model.AvailableHomes)
+                        {
+                            <option value="@home.Id" 
+                                    data-price="@home.PricePerDay"
+                                    @(Model.HomeId == home.Id ? "selected" : "")>
+                                @home.Name - @home.Location ($@home.PricePerDay/day)
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6 mb-3 d-flex align-items-end">
+                <button type="button" class="btn btn-primary-custom btn-custom w-100 room-selection-btn" 
+                        data-bs-toggle="modal" data-bs-target="#homeDrawingModal" id="selectRoomsBtn">
+                    <i class="fas fa-map me-2"></i>Select Rooms
+                    <span id="roomSelectionBadge" class="room-selection-badge d-none">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="Message" class="form-label">
+                <i class="fas fa-comment me-1"></i>Special Requests
+            </label>
+            <textarea class="form-control" id="Message" name="Message" rows="3" 
+                      placeholder="Any special requests or notes...">@Model?.Message</textarea>
+        </div>
+
+        <!-- Selected Rooms Summary -->
+        <div id="selectedRoomsSummary" class="selection-summary d-none">
+            <h6><i class="fas fa-check-circle me-2"></i>Selected Rooms:</h6>
+            <div id="selectedRoomsDisplay"></div>
+            <div id="totalPriceDisplay" class="mt-2 fw-bold text-success"></div>
+        </div>
+
+        <!-- Hidden fields for selected rooms -->
+        <input type="hidden" id="SelectedRoomIds" name="SelectedRoomIds" />
+        <input type="hidden" id="SelectedRoomData" name="SelectedRoomData" />
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">
+        <i class="fas fa-times me-1"></i>Cancel
+    </button>
+    <button type="submit" form="bookingForm" class="btn btn-success btn-custom">
+        <i class="fas fa-save me-1"></i>Save Booking
+    </button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
+<script>
+$(document).ready(function () {
+    // Initialize date picker
+    const picker = new Litepicker({
+        element: document.getElementById('BookingRange'),
+        singleMode: false,
+        format: 'YYYY-MM-DD',
+        minDate: new Date(),
+        onSelect: function (start, end) {
+            document.getElementById('BookingDateFrom').value = start.format('YYYY-MM-DD');
+            document.getElementById('BookingDateTo').value = end.format('YYYY-MM-DD');
+        }
+    });
+
+    // Set initial date range if model has data
+    @if (Model?.BookingDateFrom != DateTime.MinValue)
+    {
+        <text>
+        picker.setDateRange('@Model.BookingDateFrom.ToString("yyyy-MM-dd")', '@Model.BookingDateFrom.AddDays(1).ToString("yyyy-MM-dd")');
+        </text>
+    }
+
+    // Update room selection badge
+    function updateRoomSelectionBadge() {
+        const selectedRooms = JSON.parse(localStorage.getItem('selectedRoomData') || '[]');
+        const badge = $('#roomSelectionBadge');
+        
+        if (selectedRooms.length > 0) {
+            badge.text(selectedRooms.length).removeClass('d-none');
+        } else {
+            badge.addClass('d-none');
+        }
+    }
+
+    // Calculate total booking price
+    function calculateTotalPrice() {
+        const selectedRooms = JSON.parse(localStorage.getItem('selectedRoomData') || '[]');
+        const homeSelect = $('#HomeId');
+        const selectedHome = homeSelect.find(':selected');
+        const homePricePerDay = parseFloat(selectedHome.data('price')) || 0;
+        
+        const startDate = $('#BookingDateFrom').val();
+        const endDate = $('#BookingDateTo').val();
+        
+        let totalDays = 1;
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            totalDays = totalDays > 0 ? totalDays : 1;
+        }
+        
+        // Calculate room-specific pricing if available
+        let roomTotal = 0;
+        selectedRooms.forEach(room => {
+            roomTotal += parseFloat(room.price) || 0;
+        });
+        
+        // If no room-specific pricing, use home base price
+        const dailyRate = roomTotal > 0 ? roomTotal : homePricePerDay;
+        const totalPrice = dailyRate * totalDays;
+        
+        return {
+            dailyRate: dailyRate,
+            totalDays: totalDays,
+            totalPrice: totalPrice
+        };
+    }
+
+    // Update booking form summary when rooms are selected
+    function updateBookingSummary() {
+        const selectedRooms = JSON.parse(localStorage.getItem('selectedRoomData') || '[]');
+        
+        if (selectedRooms.length > 0) {
+            const roomNames = selectedRooms.map(room => room.label).join(', ');
+            const pricing = calculateTotalPrice();
+            
+            $('#selectedRoomsDisplay').html(`
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <span><strong>${selectedRooms.length} rooms:</strong> ${roomNames}</span>
+                    <span class="badge bg-info">$${pricing.dailyRate}/day</span>
+                </div>
+            `);
+            
+            $('#totalPriceDisplay').html(`
+                <i class="fas fa-calculator me-2"></i>
+                Total: $${pricing.dailyRate} × ${pricing.totalDays} days = $${pricing.totalPrice}
+            `);
+            
+            $('#selectedRoomsSummary').removeClass('d-none');
+            $('#SelectedRoomIds').val(selectedRooms.map(room => room.id).join(','));
+            $('#SelectedRoomData').val(JSON.stringify(selectedRooms));
+        } else {
+            $('#selectedRoomsSummary').addClass('d-none');
+            $('#SelectedRoomIds').val('');
+            $('#SelectedRoomData').val('');
+        }
+        
+        updateRoomSelectionBadge();
+    }
+
+    // Listen for room selection updates
+    $(window).on('roomsUpdated', function() {
+        updateBookingSummary();
+    });
+
+    // Update pricing when dates or home change
+    $('#BookingRange, #HomeId').on('change', function() {
+        updateBookingSummary();
+    });
+
+    // Disable room selection if no home selected
+    $('#HomeId').on('change', function() {
+        const homeId = $(this).val();
+        const roomBtn = $('#selectRoomsBtn');
+        
+        if (homeId) {
+            roomBtn.prop('disabled', false);
+            roomBtn.attr('data-home-id', homeId);
+        } else {
+            roomBtn.prop('disabled', true);
+            roomBtn.removeAttr('data-home-id');
+            // Clear room selections when home changes
+            localStorage.removeItem('selectedRoomData');
+            updateBookingSummary();
+        }
+    });
+
+    // Initialize summary on page load
+    updateBookingSummary();
+
+    // Form submission
+    $('#bookingForm').submit(function (e) {
+        e.preventDefault();
+
+        // Validate that a home is selected
+        if (!$('#HomeId').val()) {
+            alert('Please select a home before booking.');
+            return;
+        }
+
+        // Validate date range
+        if (!$('#BookingDateFrom').val() || !$('#BookingDateTo').val()) {
+            alert('Please select booking dates.');
+            return;
+        }
+
+        const selectedRooms = JSON.parse(localStorage.getItem('selectedRoomData') || '[]');
+        const pricing = calculateTotalPrice();
+
+        const bookingData = {
+            CustomerName: $('#CustomerName').val(),
+            CustomerEmail: $('#CustomerEmail').val(),
+            CustomerPhone: $('#CustomerPhone').val(),
+            Message: $('#Message').val(),
+            BookingDateFrom: $('#BookingDateFrom').val(),
+            BookingDateTo: $('#BookingDateTo').val(),
+            HomeId: parseInt($('#HomeId').val()),
+            SelectedRoomIds: selectedRooms.map(room => room.id).join(','),
+            SelectedRoomData: JSON.stringify(selectedRooms),
+            TotalPrice: pricing.totalPrice,
+            DailyRate: pricing.dailyRate,
+            TotalDays: pricing.totalDays
+        };
+
+        // Save to localStorage for persistence
+        localStorage.setItem('bookingData', JSON.stringify(bookingData));
+
+        // Submit to server
+        $.ajax({
+            url: '/Booking/SaveBooking', // Update with your actual controller path
+            type: 'POST',
+            data: bookingData,
+            success: function (response) {
+                alert(`Booking Saved Successfully!\n\nBooking Details:\nCustomer: ${bookingData.CustomerName}\nHome: ${$('#HomeId option:selected').text()}\nRooms: ${selectedRooms.length}\nDates: ${bookingData.BookingDateFrom} to ${bookingData.BookingDateTo}\nTotal: $${bookingData.TotalPrice}`);
+                
+                $('#bookingModal').modal('hide');
+                
+                // Clear form and selections
+                $('#bookingForm')[0].reset();
+                localStorage.removeItem('selectedRoomData');
+                localStorage.removeItem('bookingData');
+                updateBookingSummary();
+                
+                // Trigger custom event for other components
+                $(window).trigger('bookingSaved', [bookingData]);
+            },
+            error: function(xhr, status, error) {
+                console.error('Booking error:', error);
+                alert('Error saving booking: ' + (xhr.responseJSON?.message || error));
+            }
+        });
+    });
+
+    // Initialize home selection state
+    $('#HomeId').trigger('change');
+});
+</script>

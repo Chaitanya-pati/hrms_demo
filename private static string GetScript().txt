@@ -1,0 +1,383 @@
+private static string GetScript()
+{
+    #region Script
+    return "<script> " +
+        "var baseConfigTxtWidth = 93;" +
+        "var baseScaleRatio = 1.0;" +
+        "function calculateScaleRatio(configTxtWidth) {" +
+        "let scaleRatio = baseScaleRatio * (configTxtWidth / baseConfigTxtWidth);" +
+        "return scaleRatio;" +
+        "}" +
+        "$(window).resize(function () {" +
+        "var width = $('.bm-overview-alarm-config-text')[0].offsetWidth;" +
+        "const currentScale = calculateScaleRatio(width);" +
+        "$('#DivSkid').css('transform', 'scale(' + currentScale + ', ' + currentScale + ')');" +
+        " });" +
+        "$('.fa-bars').click(function () {" +
+        "setTimeout(function () {" +
+        "var width = $('.bm-overview-alarm-config-text')[0].offsetWidth;" +
+        "const currentScale = calculateScaleRatio(width);" +
+        "$('#DivSkid').css('transform', 'scale(' + currentScale +', ' + currentScale + ')');" +
+        "}, 400); " +
+        "});" +
+        "var dateRange = [];var datearangeDt=[];var datearangeDtReverse =[];var tzoffset;var secondsSkip;var tempcount; var layoutName='Overview';" +
+        "var isSkidBlink = 0;" +
+        "var isActiveAlarm = 0;" +
+        "setTimeout(function () {" +
+        "$.get('/Alarms/AlarmsSelectable')\r\n  .done(function (response) { const html = $('<div>').html(response); const content = html.find('main').html();  $('#partialdiv').html(content);  })  .fail(function (xhr, status, error) { });\r\n" +
+        "}, 1000);" +
+        "function ResetLayout() {\r\n    for (const divMain of document.getElementsByClassName('Conveyer')) {\r\n        for (const divSection of divMain.getElementsByClassName('ConveyerSection')) {\r\n            divSection.style.transform = 'scale(1, 1)';\r\n        }\r\n        divMain.scrollTop = 0;\r\n        divMain.scrollLeft = 0;\r\n        \r\n        // Reset the scale property and set isOff flag\r\n        divMain.scale = 1;\r\n        divMain.isOff = true;\r\n    }\r\n}" +
+        "window.addEventListener('load',function () {" +
+        " loadCultureFiles($('#ddlLang').val());let Dateformat = getCultureDtformat();" +
+        "var currentDate = new Date();\r\n            var pastDate = new Date(currentDate);\r\n          \r\n            pastDate.setHours(0, 0, 0, 0);SyncF_DateRangePicker('#dateRange', {\r\n                cssClass: 'e-outline',\r\n                floatLabelType: 'Always',        close: function (args) {\r\n                    if (args.event != null) {\r\n                        SetEndTimingOverview();\r\n                    }\r\n                },                          format: Dateformat + ' HH:mm',\r\n                showClearButton: false,\r\n                startDate: pastDate,\r\n                endDate: currentDate,\r\n open(args) {\r\n                    args.popup.position = { X: 'left', Y: 'bottom' };\r\n                },locale:getCulture(), presets: [\r\n                    { label: '" + _localizationService.GetLocalizedStringAsHtml("BTO_Today") + "', start: new Date(new Date().setHours(0, 0, 0, 0)), end: new Date() },\r\n                    {\r\n                        label: '" + _localizationService.GetLocalizedStringAsHtml("BTO_ThisWeek") + "',\r\n                        start: new Date(new Date().setDate(currentDate.getDate() - (currentDate.getDay() + 7) % 7)).toDateString(),\r\n                        end: new Date(new Date().setDate(currentDate.getDate() - (currentDate.getDay() + 7) % 7 + 6)).toDateString()\r\n                    },  {\r\n                                label: '" + _localizationService.GetLocalizedStringAsHtml("BTO_LastWeek") + "',                               start: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() + 7) % 7 - 7)),\r\n                                 end: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() + 7) % 7-1))\r\n                            },\r\n                    {\r\n                        label: '" + _localizationService.GetLocalizedStringAsHtml("BTO_ThisMonth") + "',\r\n                        start: new Date(new Date().setDate(1)).toDateString(),\r\n                        end: new Date(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)).toDateString()\r\n                    },\r\n                    {\r\n                        label: '" + _localizationService.GetLocalizedStringAsHtml("BTO_LastMonth") + "',\r\n                        start: new Date(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)).toDateString(),\r\n                        end: new Date(new Date(currentDate.getFullYear(), currentDate.getMonth(), 0)).toDateString()\r\n                    }\r\n                ],              changeOnBlur: false,\r\n created:function(){$('.e-date-range-wrapper .e-input-group-icon').attr('style', 'margin-right: -4.3rem !important');$('#go').trigger('click');},                change: function () {checkrangeValidate();stopInterval();initializeView = true;      }\r\n            });" +
+        "SyncF_TextBox('#txtskidno', {  cssClass: 'e-outline', floatLabelType: 'Always'});" +
+        "SyncF_TextBox('#d_play', {  cssClass: 'e-outline', floatLabelType: 'Always'});" +
+        "SyncF_TextBox('#d_backforward', {  cssClass: 'e-outline', floatLabelType: 'Always'});" +
+        "SyncF_TextBox('#d_fbackforward', {  cssClass: 'e-outline', floatLabelType: 'Always'});" +
+        "" +
+        "SyncF_Dialog('#AlarmConfigPopup', {header:'" + _localizationService.GetLocalizedStringAsHtml("BTO_AddAlarmsHederTxt") + "',\r\n            content: document.getElementById('AlarmConfigPopupContent'),\r\n            allowDragging: false,\r\n            showCloseIcon: true,\r\n            visible: false,\r\n            isModal: true,\r\n            position: { X: 'center', Y: 'center' },\r\n            width: '60%',\r\n            buttons: [\r\n                {\r\n                    buttonModel: {\r\n                        content:'" + _localizationService.GetLocalizedStringAsHtml("BTO_SaveBtnTxt") + "',\r\n                        isPrimary: true\r\n                    },\r\n                    click: function (args) {\r\n                        SaveSpotConfig();\r\n                    }\r\n                }\r\n            ],\r\n            created: function (args) {\r\n                //  this.hide();\r\n            }\r\n        });" +
+        "SyncF_Dialog('#durationPopup', {header:'" + _localizationService.GetLocalizedStringAsHtml("BTO_SetSpeed") + "',content: document.getElementById('durationPopupContent'),\r\n            allowDragging: false,\r\n            showCloseIcon: true,\r\n            visible: false,\r\n            isModal: true,\r\n            position: { X: 'center', Y: 'center' },\r\n            width: '20%',\r\n               });" +
+        " $('#custom-content-tab').parent()[0].attributes[0].value = 'position:fixed;top:14.8rem;left:50%;transform:translate(-50%,-42%); z-index:89;';" +
+        " $('.tab-pane').hide();" +
+        " $('.tab-pane:first').show();" +
+        " $('#daterangealert').hide();" +
+        " var outlineTextbox = new ej.inputs.TextBox({" +
+        "   cssClass: 'e-outline'," +
+        "   floatLabelType: 'Always'" +
+        " });" +
+        " $('#skidsPlayer .Outline').each(function(){" +
+        " var id = $(this)[0].id;" +
+        " outlineTextbox.appendTo('#' + id);" +
+        " });" +
+        " $('#duration_save').prop('disabled',true);" +
+        " tzoffset = (new Date()).getTimezoneOffset() * 60000;" +
+        " $(document).on({" +
+        " mouseenter: function() {" +
+        "  $('#tooltip').css('display', 'block');" +
+        " }," +
+        " mousedown: function() {" +
+        "   $('#tooltip').css('display', 'block');" +
+        " }," +
+        " mouseleave: function() {" +
+        "   $('#tooltip').css('display', 'none');" +
+        "   $('.range-value span').css('opacity', '1');" +
+        " }},'input[type=range]');" +
+        " var newValue = 0;" +
+        " var newPosition = 0;" +
+        " $('#timeLineContainer').hide();" +
+        " var range = document.getElementById('range');" +
+        " var rangeV = document.getElementById('rangeV');" +
+        " var setValue = () => {" +
+        "   newValue = Number(range.value);" +
+        "   newPosition = 10 - (newValue * 0.2);" +
+        "   counter = Math.round((parseFloat(range.value) * parseFloat(dateRange.length) / 100));" +
+        "   var dtVal=dateRange[counter]!=undefined?dateRange[counter]:dateRange[counter-1];" +
+        "   var maxDate = new Date(dtVal);" +
+        "   updateTimer(dtVal);" +
+        "   rangeV.style.left = `calc(${newValue}% )`;" +
+        " };" +
+        " document.addEventListener(\"DOMContentLoaded\", setValue);" +
+        " range.addEventListener('input', setValue);" +
+        " range.onchange = function () {" +
+        "    $('#tooltip').css('display', 'none');" +
+        "   newValue = Number(range.value);" +
+        "   newPosition = 10 - (newValue * 0.2);" +
+        "   counter = Math.round((parseFloat(range.value) * parseFloat(dateRange.length) / 100));" +
+        "   plantPreview();" +
+        " };" +
+        " $('#spotConfigAlarms').select2();" +
+        " $('#newGroup').select2();" +
+        " $('.main-sidebar').height($(document).height() - 267);" +
+        " BindData('0');" +
+        " var counter = 0;var interval = 0;var skidSrhInterval = 0; var initializeView = true;var startDate = formatDateToString($('#dateRange')[0].ej2_instances[0].startDate);var endDate = formatDateToString($('#dateRange')[0].ej2_instances[0].endDate);var timeForPositions = $('#timeForPositions');var frameInterval;var isForward = true;var livepreview = false;var livepreviewDate = new Date();var plantMode = 'live';" +
+        " var m_pos;" +
+        "var tempAlaram = [];" +
+        " resetButtons(plantMode);" +
+        " updateTimer(formatDateToDBString($('#dateRange')[0].ej2_instances[0].startDate));" +
+        " resetPositions();" +
+        "" +
+        " setAlarmConfigs();" +
+        "" +
+        " function setAlarmConfigs() {" +
+        "   var j = 0,i = 0,strdata = '',textboxcount=1;" +
+        "   while (j <" + noofrows + " )" +
+        "   {" +
+        "       i=0;" +
+        "       strdata += '<div class=\"row bm-overview-disable-pointer-events\"><div class=\"col-lg-12 bm-overview-disable-pointer-events\" >';" +
+        "       while (i < 19) { strdata += '<input type = \"text\" class=\"bm-overview-alarm-config-text\" id = \"txt0' + textboxcount + '\" />'; i++;textboxcount++; }" +
+        "       strdata += '</div></div>';" +
+        "       j += 1;" +
+        "   }" +
+        "   $('#alarmsConfiguration').append(strdata);" +
+        "    var width = $('.bm-overview-alarm-config-text')[0].offsetWidth;" +
+        "   const currentScale = calculateScaleRatio(width);" +
+        "   $('#DivSkid').css('transform', 'scale(' + currentScale + ', ' + currentScale + ')');" +
+        " }" +
+        "" +
+        " $(document).on('click', '.bm-overview-alarm-config-text', function () {" +
+        "   $('.bm-overview-alarm-config-text').css('border-color', '#e0e0e0');" +
+        "   if (this.id = this.id) {" +
+        "       $(this).css('border-color', 'black');" +
+        "       $(this).css('opacity', '1.0');" +
+        "   }" +
+        " });" +
+        "" +
+        " $('.currentLayout').click(function(){ " +
+        "   scales = 1.00;" +
+        "   $('.ConveyerSection').css('transform', `scale(${scales}, ${scales})`);" +
+        "   $('.ConveyerSection').scrollTop(0);" +
+        "   $('.ConveyerSection').scrollLeft(0);" +
+        "   isOff = true;" +
+        "   var name = $(this)[0].attributes.layoutname.value;" +
+        "   var id = $(this)[0].attributes.href.value;" +
+        "   $('.tab-pane').hide();" +
+        "   $('#'+id.split(\"#\")[1]).show();" +
+        "   $('#alarmsConfiguration').empty();" +
+        "   setAlarmConfigs();" +
+        "   layoutName=name;" +
+        "   if($('#chkConfigtoggle')[0].ej2_instances[0].checked == true){" +
+        "   BindData('0', function() { ConvertToTextBox();})" +
+        "   }" +
+        "   else{ BindData('0');}" +
+        "   if(isActiveAlarm ==1){getMaxDate();}" +
+        " });" +
+        "" +
+        " $('#expandH').hide();$('#skidDetailTable').toggle();" +
+        "" +
+        " $(document).on('click', '#expandH', function () { " +
+        "   $('#skidDetailTable').toggle();" +
+        "   $('#expandH').hide();" +
+        "   $('#expandS').show();" +
+        " });" +
+        "" +
+        " $(document).on('click', '#expandS', function () { " +
+        "   $('#skidDetailTable').toggle();" +
+        "   $('#expandH').show();" +
+        "   $('#expandS').hide();" +
+        " });" +
+        "" +
+       "for (const divMain of document.getElementsByClassName('Conveyer')) {" +
+        "   for (const divSection of divMain.getElementsByClassName('ConveyerSection')) {" +
+        "       let previousX, previousY;" +
+        "       divSection.addEventListener('mousedown', (event) => {" +
+        "           previousX = event.pageX;" +
+        "           previousY = event.pageY;" +
+        "       });" +
+        "       divSection.addEventListener('mousemove', (event) => {" +
+        "           if (event.buttons) {" +
+        "               let dragX = 0;" +
+        "               let dragY = 0;" +
+        "               if (event.pageX - previousX !== 0) {" +
+        "                   dragX = previousX - event.pageX;" +
+        "                   previousX = event.pageX;" +
+        "               }" +
+        "               if (event.pageY - previousY !== 0) {" +
+        "                   dragY = previousY - event.pageY;" +
+        "                   previousY = event.pageY;" +
+        "               }" +
+        "               if (dragX !== 0 || dragY !== 0) {" +
+        "                   divMain.scrollBy(dragX, dragY);" +
+        "               }" +
+        "           }" +
+        "       });" +
+        "   }" +
+        "   divMain.scale = 1;" +
+        "   const factor = 0.05;" +
+        "   const max_scale = 4;" +
+        "   var isOff = false;" +
+        "   let zoom_point_new;" +
+        "   divMain.addEventListener('wheel', (e) => {" +
+        "       for (const divSection of divMain.getElementsByClassName('ConveyerSection')) {" +
+        "           e.preventDefault();" +
+        "           var delta = e.delta || e.wheelDelta;" +
+        "           if (delta === undefined) {" +
+        "               delta = e.originalEvent.detail;" +
+        "           }" +
+        "           delta = Math.max(-1, Math.min(1, delta));" +
+        "           offset = { x: divMain.scrollLeft, y: divMain.scrollTop };" +
+        "           image_loc = { x: e.pageX + offset.x, y: e.pageY + offset.y };" +
+        "           zoom_point = { x: image_loc.x / divMain.scale, y: image_loc.y / divMain.scale };" +
+        "           divMain.scale += delta * factor * divMain.scale;" +
+        "           divMain.scale = Math.max(1, Math.min(max_scale, divMain.scale));" +
+        "           zoom_point_new = { x: zoom_point.x * divMain.scale, y: zoom_point.y * divMain.scale };" +
+        "           newScroll = { x: zoom_point_new.x - e.pageX, y: zoom_point_new.y - e.pageY };" +
+        "           if (divMain.isOff == true) {" +
+        "               divMain.scale = 1.00;" +
+        "               divSection.style.transform = `scale(${divMain.scale}, ${divMain.scale})`;" +
+        "               divMain.scrollTop = 0;" +
+        "               divMain.scrollLeft = 0;" +
+        "               divMain.isOff = false;" +
+        "           } else {" +
+        "               divSection.style.transform = `scale(${divMain.scale}, ${divMain.scale})`;" +
+        "               divMain.scrollTop = newScroll.y;" +
+        "               divMain.scrollLeft = newScroll.x;" +
+        "           }" +
+        "       }" +
+        "   });" +
+        "}" +
+        "" +
+        " $(document).on('change', '#frameInterval', function () { " +
+        "   stopInterval();" +
+        "   if (interval == 0) {" +
+        "   frameInterval = $(this).val();" +
+        "   }" +
+        " });" +
+        "" +
+        " $(document).on('click','.imgDelete',function(){" +
+        "   var spotID = this.id;" +
+        "   var div=$(this.parentNode);" +
+        "   var deleteImage=$(this);" +
+        "   SyncF_Confirm({" +
+        "       title:'" + _localizationService.GetLocalizedStringAsHtml("BTO_DeleteBtnTxt") + "'," +
+        "       content:'" + _localizationService.GetLocalizedStringAsHtml("BTO_DeleteContentMsg") + "'," +
+        "position: { X: 'center', Y: 'center' }," +
+        "     okButton: {" +
+        "           " +
+        "           text:'" + _localizationService.GetLocalizedStringAsHtml("BTO_YesTxt") + "'," +
+        "           click:function(){" +
+        "                   var input=$(div).find(`[idval='${spotID}']`);" +
+        "                   $(input).removeAttr('idval');" +
+        "                   $(input).removeAttr('alarm');" +
+        "                   $(input).innerText = '';" +
+        "                   $(input).val('');" +
+        "                   $(input).removeAttr('title');" +
+        "                   $(input).removeAttr('style');" +
+        "                   $(input).removeClass('bm-overview-alarm-config');" +
+        "                   deleteImage.remove();" +
+        "                   $.get({" +
+        "                   url:'../Skids/DeleteSpotComment'," +
+        "                   data: { spotID : spotID }," +
+        "                   success:function(response){BindData('1');},error:function(err){ }" +
+        "                   });" +
+        "                   SyncF_ShowToast('success', '" + _localizationService.GetLocalizedStringAsHtml("BTO_OverView_AlarmsDeleteSuccessMsg") + "');" +
+        "                    this.hide(); " +
+        "                   }" +
+        "            }," +
+        "cancelButton:{" +
+        "            text:'" + _localizationService.GetLocalizedStringAsHtml("BTO_NoTxt") + "'," +
+        "            click:function(){" +
+        "                    this.hide();" +
+        "            }" +
+        "            }," +
+        "   })" +
+        " });" +
+        "function resetPositions() {" +
+        "$('div[position][fkpddb]').each(function(index, element) {" +
+        "var resetSkid = $(this);" +
+        "if (resetSkid.length > 0) {" +
+        "var displayname= resetSkid[0].attributes.displayname.nodeValue;" +
+        "var position = resetSkid[0].attributes.position.nodeValue;" +
+        "if(displayname == '')" +
+        "{var skidDiv = '<div class=\"bm-overview-empty-skid\">' + position + '</div>';}" +
+        "else{ var skidDiv = '<div class=\"bm-overview-empty-skid\">' + displayname + '</div>'; }" +
+        "resetSkid.empty();" +
+        "resetSkid.append(skidDiv);" +
+        "resetSkid.attr('fkpddb', 0);" +
+        "}" +
+        "});" +
+        "}" +
+        "" +
+        "var plantPreview = function (operation) {" +
+        "if(operation == 'A' && dateRange[counter] == undefined)" +
+        "{SyncF_ShowToast('warning', '" + _localizationService.GetLocalizedStringAsHtml("BTO_NodataAvailableforwardMsg") + "');stopInterval();interval = 0;return false;}" +
+        "BindData('1');" +
+        "$('.preload').css('display', 'block');" +
+        "$.get({" +
+        "url: '../Skids/GetSkidTrackings'," +
+        "data: { dateTime: dateRange[counter] }," +
+        "success: function (response) {" +
+        "$('.preload').css('display', 'none');" +
+        "var dtVal=dateRange[counter]!=undefined?dateRange[counter]:dateRange[counter-1];" +
+        "updateTimer(dtVal);" +
+        "var newRngVal = ((counter * 100) / parseFloat(dateRange.length));" +
+        "rangeV.style.left = `calc(${newRngVal}%)`;" +
+        "$('#range').val(newRngVal);" +
+        "var skids = response.skids;" +
+        "var alarms = response.alarms;" +
+        "resetPositions();" +
+        "for (var i = 0; i < skids.length; i++) {" +
+        "var skid = skids[i];" +
+        "var LeadingZero = skid.position.toString().length < 3 ? skid.position.toString().padStart(3,'0'):skid.position; " +
+        " var skidPosition = $('div[position=\"' + LeadingZero + '\"]');" +
+        "" +
+        "if (skidPosition != undefined) {" +
+        "var skidDiv = '<div class=\"bm-overview-present-skid\">' + skid.number + '</div>';" +
+        "skidPosition.empty();" +
+        "skidPosition.append(skidDiv);" +
+        "skidPosition.attr('fkpddb', skid.fkPddb);" +
+        "}" +
+        "}" +
+        "updateAlarmsGrid(alarms);" +
+        "" +
+        "tempcount = counter;" +
+        "counter = isForward ? counter + 1 : counter - 1;" +
+        "newValue = isForward ? newValue + 1 : newValue - 1;" +
+        "if (dateRange[counter] == undefined) {" +
+        "if(operation == 'A') {" +
+        "stopInterval();" +
+        "interval = 0;" +
+        "counter = counter - 1;" +
+        "newValue = newValue - 1;" +
+       "SyncF_ShowToast('success', '" + _localizationService.GetLocalizedStringAsHtml("BTO_NodataAvailableforwardMsg") + "');" +
+        "}" +
+        "}" +
+        "}," +
+        "error: function (err) { $('.preload').css('display', 'none'); }" +
+        "});" +
+        "};" +
+        "" +
+        "function SetEndTimingOverview() {\r\n    const today = new Date();\r\n    today.setHours(0, 0, 0, 0);\r\n    let instance = $('#dateRange')[0].ej2_instances[0];\r\n    if (instance.endDate < today || instance.endDate >= new Date(today.getTime() + 86400000)) {\r\n        instance.endDate.setHours(23, 59, 0, 0);\r\n\r\n    } else {\r\n        const now = new Date();\r\n        instance.endDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());\r\n\r\n    }\r\n    instance.refresh();checkrangeValidate(); $('.e-date-range-wrapper .e-input-group-icon').attr('style', 'margin-right: -4.3rem !important');\r\n}" +
+        "function updateAlarmsGrid(alarms) {" +
+        "for (j = 0; j < tempAlaram.length; j++) {" +
+        "var t = $('#alarmsConfiguration').find(\"[alarm = '\"+tempAlaram[j].alarm+\"']\");" +
+        "$(t).addClass('bm-overview-alarm-config').removeClass('bm-overview-alarm-config-active');" +
+        "$(t).addClass('bm-overview-bm-overview-live-mode-stop');" +
+        "}" +
+        "if(alarms.length > 0) {" +
+        "for (i = 0; i < alarms.length; i++) {" +
+        "var timeInAlarm = new Date(alarms[i].timeIn);" +
+        "var timePLCAckAlarm = new Date(alarms[i].timePLCAck);" +
+        "var DisplayDatetime = new Date(tempDate);" +
+        "var CheckIsAlarmMatching = tempAlaram.filter(x => x.alarm == alarms[i].id);" +
+        "if (CheckIsAlarmMatching.length > 0) {" +
+        "for (j = 0; j < CheckIsAlarmMatching.length; j++) {" +
+        "var t = $('#alarmsConfiguration').find(\"[alarm = '\"+CheckIsAlarmMatching[j].alarm+\"']\");" +
+        "$(t).addClass('bm-overview-alarm-config-active').removeClass('bm-overview-alarm-config');" +
+        "isActiveAlarm =  1;" +
+        "$(t).removeClass('bm-overview-bm-overview-live-mode-stop');" +
+        "blink('#' + $(t[j]).attr('id'));" +
+        "}" +
+        "}" +
+        "var CheckIsAlarmNotMatching = tempAlaram.filter(x => x.alarm != alarms[i].id);" +
+        "if (CheckIsAlarmNotMatching.length > 0) {" +
+        "for (j = 0; j < CheckIsAlarmNotMatching.length; j++) {" +
+        "if(tempDate < timeInAlarm && tempDate > timePLCAckAlarm) {" +
+        "var t = $('#alarmsConfiguration').find(\"[alarm = '\"+CheckIsAlarmNotMatching[j].alarm + \"']\"); " +
+        "$(t).addClass('bm-overview-alarm-config').removeClass('bm-overview-alarm-config-active');" +
+        "$(t).addClass('bm-overview-bm-overview-live-mode-stop');" +
+        "}" +
+        "}" +
+        "}" +
+        "}" +
+        "}" +
+        "" +
+        "synfusionGridtbl(formatDatesInArrayOfObjectsNewFormat(alarms),'Divalarmsdata');" +
+        "" +
+        "$('#alarms').DataTable({" +
+        "width: '100%'," +
+        "data: alarms," +
+        "paging: true," +
+        "destroy: true," +
+        "\"bInfo\": false," +
+        "\"pageLength\": 5," +
+        "'aoColumnDefs': [{ 'bSortable': false, 'aTargets': [-1, -2, -5], }]," +
+        "columns: [" +
+        "{ 'data': 'messageText' }," +
+        "{" +
+        "'data': 'timeIn'," +
+        "'type': 'date'," +
+        "'render': function (value) {" +
+        "return getFormatedDate(value);" +
+        "}" +
+        "}," +
+        "{

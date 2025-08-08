@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lodge Booking Calendar</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" />
+    
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --light-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-color), #764ba2);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .main-header h1 {
+            margin: 0;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .action-buttons {
+            margin-bottom: 2rem;
+        }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            margin: 0 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), #764ba2);
+            color: white;
+        }
+
+        .btn-success-custom {
+            background: linear-gradient(135deg, var(--success-color), #20c997);
+            color: white;
+        }
+
+        .btn-warning-custom {
+            background: linear-gradient(135deg, var(--warning-color), #fd7e14);
+            color: #000;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin: 0 auto;
+            max-width: 95%;
+        }
+
+        #calendar {
+            margin: 0;
+        }
+
+        /* Calendar Customization */
+        .fc-header-toolbar {
+            margin-bottom: 1.5rem !important;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 10px;
+        }
+
+        .fc-button-primary {
+            background: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            border-radius: 8px !important;
+        }
+
+        .fc-button-primary:hover {
+            background: #5a6fd8 !important;
+            border-color: #5a6fd8 !important;
+        }
+
+        .fc-day-today {
+            background: rgba(102, 126, 234, 0.1) !important;
+        }
+
+        .fc-daygrid-day:hover {
+            background: rgba(102, 126, 234, 0.05);
+            cursor: pointer;
+        }
+
+        /* Modal Customizations */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), #764ba2);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-header {
+                padding: 1rem 0;
+            }
+
+            .main-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .calendar-container {
+                padding: 1rem;
+                margin: 0 1rem;
+            }
+
+            .btn-custom {
+                padding: 10px 20px;
+                margin: 0.25rem;
+                font-size: 0.9rem;
+            }
+
+            .action-buttons {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Header -->
+    <div class="main-header">
+        <div class="container">
+            <div class="text-center">
+                <h1><i class="fas fa-calendar-alt me-3"></i>Lodge Booking Calendar</h1>
+                <p class="lead mb-0">Manage your property bookings with ease</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="container">
+        <div class="action-buttons text-center">
+            <button id="book" class="btn btn-success-custom btn-custom">
+                <i class="fas fa-download me-2"></i>Get Bookings
+            </button>
+            <button id="make-booking-button" class="btn btn-primary-custom btn-custom">
+                <i class="fas fa-plus me-2"></i>Make Booking
+            </button>
+            <button id="test-button" class="btn btn-warning-custom btn-custom">
+                <i class="fab fa-airbnb me-2"></i>Sync Airbnb
+            </button>
+        </div>
+
+        <!-- Calendar Container -->
+        <div class="calendar-container">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 mb-0">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">
+                        <i class="fas fa-calendar-plus me-2"></i>Add New Booking
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="modalBody">
+                    <!-- Booking form partial will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container for Home Drawing Modal -->
+    <div id="homeDrawingContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar;
+
+            if (!calendarEl) {
+                console.error("Calendar element not found.");
+                return;
+            }
+
+            // Initialize Calendar
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                selectMirror: true,
+                events: fetchBookings,
+                eventColor: '#FF6B6B',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                dateClick: function (info) {
+                    handleDateClick(info.dateStr);
+                },
+                eventClick: function(info) {
+                    showEventDetails(info.event);
+                },
+                loading: function(bool) {
+                    if (bool) {
+                        showLoading();
+                    } else {
+                        hideLoading();
+                    }
+                }
+            });
+
+            calendar.render();
+
+            // Event Listeners
+            document.getElementById("test-button").addEventListener("click", syncAirbnb);
+            document.getElementById("book").addEventListener("click", bookTest);
+            document.getElementById("make-booking-button").addEventListener("click", makeBookingTest);
+
+            // Utility Functions
+            function showLoading() {
+                $('#loadingSpinner').show();
+            }
+
+            function hideLoading() {
+                $('#loadingSpinner').hide();
+            }
+
+            function showNotification(message, type = 'info', duration = 5000) {
+                const alertClass = type === 'success' ? 'alert-success' : 
+                                 type === 'error' ? 'alert-danger' : 'alert-info';
+                const iconClass = type === 'success' ? 'fa-check-circle' : 
+                                 type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+                
+                const notification = $(`
+                    <div class="alert ${alertClass} alert-dismissible fade show notification" role="alert">
+                        <i class="fas ${iconClass} me-2"></i>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+                
+                $('body').append(notification);
+                
+                if (duration > 0) {
+                    setTimeout(() => {
+                        notification.alert('close');
+                    }, duration);
+                }
+            }
+
+            // Handle Date Click
+            function handleDateClick(dateStr) {
+                showLoading();
+                $.get('/Scheduler/AddBookingForm', { date: dateStr })
+                    .done(function (html) {
+                        $('#modalBody').html(html);
+                        $('#bookingModal').modal('show');
+                        
+                        // Set the selected date in the form
+                        const picker = window.currentDatePicker;
+                        if (picker) {
+                            picker.setDate(dateStr);
+                        }
+                    })
+                    .fail(function(xhr, status, error) {
+                        console.error('Error loading booking form:', error);
+                        showNotification('Error loading booking form. Please try again.', 'error');
+                    })
+                    .always(function() {
+                        hideLoading();
+                    });
+            }
+
+            // Show Event Details
+            function showEventDetails(event) {
+                const eventInfo = `
+                    <div class="event-details">
+                        <h6>${event.title}</h6>
+                        <p><strong>Start:</strong> ${event.start.toLocaleDateString()}</p>
+                        <p><strong>End:</strong> ${event.end ? event.end.toLocaleDateString() : 'N/A'}</p>
+                    </div>
+                `;
+                showNotification(eventInfo, 'info', 0);
+            }
+
+            // jQuery Ready Function
+            $(document).ready(function () {
+                // Handle Home dropdown change
+                $(document).on('change', '#HomeId', function () {
+                    const homeId = $(this).val();
+                    if (!homeId) return;
+
+                    // Hide the booking modal temporarily
+                    $('#bookingModal').modal('hide');
+
+                    // Load and show the Home Drawing modal
+                    showLoading();
+                    $.get(`/Scheduler/GetHomeDrawing?homeId=${homeId}`)
+                        .done(function (html) {
+                            $('#homeDrawingContainer').html(html);
+                            
+                            // Show the home drawing modal
+                            const homeDrawingModal = new bootstrap.Modal(document.getElementById('homeDrawingModal'));
+                            homeDrawingModal.show();
+
+                            // When drawing modal closes, show booking modal again
+                            $('#homeDrawingModal').on('hidden.bs.modal', function () {
+                                setTimeout(() => {
+                                    $('#bookingModal').modal('show');
+                                }, 300);
+                            });
+                        })
+                        .fail(function(xhr, status, error) {
+                            console.error('Error loading home drawing:', error);
+                            showNotification('Error loading room layout. Please try again.', 'error');
+                            // Show booking modal again on error
+                            $('#bookingModal').modal('show');
+                        })
+                        .always(function() {
+                            hideLoading();
+                        });
+                });
+
+                // Listen for successful booking saves
+                $(window).on('bookingSaved', function(event, bookingData) {
+                    calendar.refetchEvents();
+                    showNotification('Booking saved successfully!', 'success');
+                });
+
+                // Listen for room selection updates
+                $(window).on('roomsUpdated', function() {
+                    showNotification('Room selection updated!', 'info', 3000);
+                });
+            });
+
+            // API Functions
+            function bookTest() {
+                showLoading();
+                $.ajax({
+                    url: '/Scheduler/GetBookings',
+                    type: 'GET',
+                    success: function (data) {
+                        console.log("Get Bookings Success:", data);
+                        showNotification("Bookings retrieved successfully!", 'success');
+                        calendar.refetchEvents();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Get Bookings Error:", error);
+                        showNotification("Error retrieving bookings. Check console for details.", 'error');
+                    },
+                    complete: function() {
+                        hideLoading();
+                    }
+                });
+            }
+
+            function makeBookingTest() {
+                showLoading();
+                $.ajax({
+                    url: '/Scheduler/MakeBooking',
+                    type: 'POST',
+                    success: function (data) {
+                        console.log("Make Booking Success:", data);
+                        showNotification(data, 'success');
+                        calendar.refetchEvents();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Make Booking Error:", error);
+                        showNotification("Error making booking. Check console for details.", 'error');
+                    },
+                    complete: function() {
+                        hideLoading();
+                    }
+                });
+            }
+
+            function fetchBookings(fetchInfo, successCallback, failureCallback) {
+                $.ajax({
+                    url: '/Scheduler/GetBookings',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        start: fetchInfo.startStr,
+                        end: fetchInfo.endStr
+                    },
+                    success: function (data) {
+                        let events = data.map(booking => ({
+                            id: booking.id,
+                            title: booking.title,
+                            start: booking.start,
+                            end: booking.end,
+                            color: booking.color || '#FF6B6B',
+                            display: booking.display || 'block',
+                            extendedProps: {
+                                customerName: booking.customerName,
+                                customerEmail: booking.customerEmail,
+                                homeId: booking.homeId
+                            }
+                        }));
+                        successCallback(events);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("❌ Error fetching bookings:", error);
+                        showNotification("Error loading calendar events.", 'error');
+                        failureCallback(error);
+                    }
+                });
+            }
+
+            function syncAirbnb() {
+                showLoading();
+                $.ajax({
+                    url: '/Scheduler/SyncAirbnb',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        showNotification("✅ Airbnb Sync Successful! Calendar refreshed.", 'success');
+                        calendar.refetchEvents();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("❌ Airbnb sync failed:", error);
+                        showNotification("❌ Failed to sync Airbnb. Check console for details.", 'error');
+                    },
+                    complete: function() {
+                        hideLoading();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

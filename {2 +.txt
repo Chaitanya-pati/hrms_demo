@@ -1,0 +1,846 @@
+"{" +
+        "'data': 'timePLCAck'," +
+        "'type': 'date'," +
+        "'render': function (value) {" +
+        "return getFormatedDate(value);" +
+        "}" +
+        "}," +
+        "{ 'data': 'groupText' }," +
+        "{ 'data': 'machine' }," +
+        "{ 'data': 'alarmClass', 'visible': false }," +
+        "]," +
+        "createdRow: function (row, data, dataIndex) {" +
+        "switch (data.alarmClass) {" +
+        "case 2:" +
+        "$(row).addClass('bm-overview-alarm-details');" +
+        "break;" +
+        "case 3:" +
+        "$(row).addClass('bm-overview-warning-details');" +
+        "break;" +
+        "default:" +
+        "$(row).addClass('text-dark');" +
+        "break;" +
+        "}" +
+        "}," +
+        "\"dom\": '<br /><\"top\">rt<\"bottom\"flp><\"clear\">'," +
+        "initComplete: function () {" +
+        "this.api().columns().every(function () {" +
+        "var column = this;" +
+        "var columnname = $(this.header()).html();" +
+        "if (columnname == 'Class') {" +
+        "$(document).on('change', '.classTextChange', function () { " +
+        "var vals = [];" +
+        "$('input:checkbox.classTextChange').each(function () {" +
+        "if (this.checked) {" +
+        "vals.push($(this).attr('value'));" +
+        "}" +
+        "});" +
+        "var filters = vals.join(\"|\");" +
+        "column.search(filters.length > 0 ? \"^(\" + filters + \")$\" : \"\", true, false).draw(); " +
+        "});" +
+        "}" +
+        "if (columnname == 'Machine' || columnname == 'GroupText') {" +
+
+        "$(this.header()).empty();" +
+        "columnname = columnname.split('<div')[0];" +
+        "$(this.header()).html(columnname);" +
+        "var headerText = $(this.header()).html().replace(/ /gi, \"_\");" +
+        "var btnS = headerText + '_alarms';" +
+        "var ddmenu = cbDropdown($(column.header()), btnS);" +
+        "var classVal = 'chkCheckBox_' + headerText;" +
+        "ddmenu.prepend($('<li><label><span>" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SelectAllTxt") + "</span><input class=\"' + classVal + '\" type=\"checkbox\" value=\"checkAll\"></label></li>'));" +
+        "$(column.header()).children().prepend('<input class=\"textinputtextbox droplist_' + btnS + '\" data-headtext=\"' + btnS + '\" onkeyup=\"filterFunction(this);\" style=\"width:-webkit-fill-available;color:black;border-radius:6px;\" type=\"text\" />');" +
+
+        "column.data().unique().sort().each(function(d, j) {" +
+        "var $label = $(\"<label>\")," +
+        "$text = $(\"<span>\", { text: d," +
+        "})," +
+        "$cb = $(\"<input>\", {" +
+        "type: \"checkbox\"," +
+        "class: \"chkCheckBox_\" + headerText," +
+        "value: d," +
+        "});" +
+        "$text.appendTo($label);" +
+        "$cb.appendTo($label);" +
+        "ddmenu.append($(\"<li>\").append($label));" +
+        "});" +
+        "$(column.header()).children().append(\"<div class='row bm-filters btnrow btnrows_\" + headerText + \"' style='background: white;border: 1px solid #494949;width:100%;margin-left:0px!important;display:none;'><input type='button' id='btnSearch_\" + btnS + \"' class='btnSearch' style='margin-top: 143px;font-size: 11px;padding: 6px;width: 56px;margin-left: 0.5rem;background-color: rgb(10, 154, 216);border-width: 0px!important;margin-bottom: 7px;' value='Search' /><input type='button' id='btnUncheck_\" + btnS + \"' class='btnUncheck' style='margin-top: 143px;margin-left: 1.7rem;margin-bottom: 7px;padding: 6px;font-size: 11px;background-color: rgb(10, 154, 216);border-width:0px!important;' value='Uncheck all' /></div>\");" +
+        "$('.' + classVal).change(function() {" +
+        "if (this.value == \"checkAll\"){" +
+        "if (this.checked) {" +
+        "var chklist = this.classList.value;" +
+        "$(\".\" + chklist).each(function() {" +
+        "$('.' + chklist).prop('checked', true);" +
+        "});" +
+        "}" +
+        "else{" +
+        "var chklist = this.classList.value" +
+        "$(\".\" + chklist).each(function() {" +
+        "$('.' + chklist).prop('checked', false);" +
+        "});" +
+        "}" +
+        "}" +
+        "});" +
+        "$('.textinputtextbox').click(function(event){" +
+        "event.stopPropagation();" +
+        "});" +
+        "$('.bm-header-filters').click(function(event){" +
+        "event.stopPropagation();" +
+        "});" +
+
+        "$('#btnUncheck_' + btnS).click(function() {" +
+        "$(this).parent().prev().prev().val('');" +
+        "$(this).parent().prev().children().find(\".chkCheckBox_\" + headerText).prop('checked', false);" +
+        "$(this).prev().click();" +
+        "$(this).parent().prev().prev().keyup();" +
+        "$(this).parent().prev().children().find(\".chkCheckBox_\" + headerText).prop('checked', false);" +
+        "});" +
+        "$(\".bm-header-filter-container_\" + headerText).hover(" +
+        "function() {" +
+        "$(this).children().eq(2).css('display', 'block');" +
+        "}, function() {" +
+        "$(this).children().eq(2).css('display', 'none');" +
+        "}" +
+        ");" +
+        "$('#btnSearch_' + btnS).click(function(){" +
+        "var active;" +
+        "var vals = $(\":checked\", ddmenu)" +
+        ".map(function(index, element) {" +
+        "active = true;" +
+        "return $.fn.dataTable.util.escapeRegex($(element).val());" +
+        "})" +
+        ".toArray().join('|');" +
+        "column.search(vals.length > 0 ? '^(' + vals + ')$' : '', true, false).draw();" +
+        "if (vals.length > 0)" +
+        "{" +
+        "$(this).parent().prev().prev().css({ \"background-color\": \"#3395FF\" });" +
+        "}" +
+        "else" +
+        "{" +
+        "$(this).parent().prev().prev().css({ \"background-color\": \"#fff\" });" +
+        "}" +
+        "})" +
+        "}" +
+        "});" +
+        "$('.classTextChange').change();" +
+        "}," +
+        "});" +
+        "" +
+        "}" +
+        "" +
+        "function cbDropdown(column, headerwithtableid) {" +
+        "var columnHeader = column.html().replace(/ /gi, '_');" +
+        "return $('<ul>', {" +
+        "class: 'bm-header-filters'" +
+        "}).appendTo($('<div>', {" +
+        "'class': \"bm-header-filter-container \" + headerwithtableid + \" bm-header-filter-container_\" + columnHeader + ''," +
+        "'id': columnHeader" +
+        "}).appendTo(column));" +
+        "}" +
+        "" +
+        "function getFormatedDate(date) {" +
+        "var dt = AddOffSetToDate(date);" +
+        "return (\"0\"+dt.getDate()).slice(-2) + \".\" + (\"0\"+(dt.getMonth() + 1)).slice(-2) + \".\" + dt.getFullYear() + \" \" + (\"0\"+dt.getHours()).slice(-2) + \":\" +  (\"0\"+dt.getMinutes()).slice(-2) + \":\" + (\"0\"+dt.getSeconds()).slice(-2);" +
+        "}" +
+        "" +
+        "function resetButtons(mode) {" +
+        "plantMode = mode;" +
+        "var enableArray = [];" +
+        "var disableArray = [];" +
+        "switch (mode) {" +
+        "case 'automatic':" +
+        "enableArray.push('play', 'pause', 'manual');" +
+        "disableArray.push('forward', 'backward','fastbackward','fastforward', 'automatic');" +
+        "break;" +
+        "case 'manual':" +
+        "enableArray.push('forward', 'backward','fastbackward','fastforward','automatic');" +
+        "disableArray.push('play', 'pause', 'manual');" +
+        "break;" +
+        "case 'live':" +
+        "disableArray.push('play', 'pause', 'forward', 'backward','fastbackward','fastforward', 'automatic', 'manual');" +
+        "break;" +
+        "case 'live-off':" +
+        "disableArray.push('play', 'pause', 'forward', 'backward','fastbackward','fastforward', 'automatic', 'manual');" +
+        "break;" +
+        "default:" +
+        "break;" +
+        "}" +
+        "enableArray.forEach(item => {" +
+        "var enableBtnObj = $('#' + item);" +
+        "enableBtnObj.attr('disabled', false);" +
+        "enableBtnObj.removeClass('btn-primary-enhanced btn-secondary-enhanced btn-success-enhanced').addClass('btn-primary-enhanced');" +
+        "});" +
+        "disableArray.forEach(item => {" +
+        "var disableBtnObj = $('#' + item);" +
+        "disableBtnObj.attr('disabled', true);" +
+        "disableBtnObj.removeClass('btn-primary-enhanced btn-secondary-enhanced btn-success-enhanced').addClass('btn-secondary-enhanced');" +
+        "});" +
+        "}" +
+        "" +
+        "var tempDate = new Date();" +
+        "" +
+        "function updateTimer(dateTime) {" +
+        "tempDate = dateTime;" +
+        // "var dt = new Date(dateTime);" +
+        "var dt = AddOffSetToDate(dateTime);" +
+        "var separator = ($('#ddlLang').val() == 'de-DE') ? '.' : '/';" +
+        "var timstmp = formatChartData(dateTime);" +
+        "rangeV.innerHTML = `<span id = 'timstmp' >${timstmp}</span >`;" +
+        "timeForPositions.html(timstmp);" +
+        "$('#hiddenTimeVal').val(dateTime);" +
+        "}" +
+        "" +
+        "$(document).on('click', '.skid', function () { " +
+        "var skidposition = $(this).attr('position');" +
+        "var sikdnoval=$(this).text();" +
+        "var skidnumber = skidposition == sikdnoval ? '' : sikdnoval ;" +
+        "$('#skidno').html(skidnumber);" +
+        "var fkpddb = $(this).attr('fkpddb');" +
+        "if (fkpddb == 0) {" +
+        "$('#clktimeStamp').html(''); " +
+        "$('#clkProductionCode').html('');" +
+        "$('#clkDescription').html(''); return;}" +
+        "$.get({" +
+        "url: '../Skids/GetSkidDetails'," +
+        "data: { fkpddb: fkpddb }," +
+        "success: function (response) {" +
+        "var d = new Date(response.timestamp);" +
+        "dformat = [AddOffSetToDate(response.timestamp).getDate(), AddOffSetToDate(response.timestamp).getMonth() + 1, AddOffSetToDate(response.timestamp).getFullYear()].join('.') + ' ' + [AddOffSetToDate(response.timestamp).getHours(), AddOffSetToDate(response.timestamp).getMinutes(), AddOffSetToDate(response.timestamp).getSeconds()].join(':');" +
+        "$('#clktimeStamp').html(dformat);" +
+        "$('#clkProductionCode').html(response.sProdCode);" +
+        "$('#clkDescription').html(response.sArtikelbzg);" +
+        "}" +
+        "});" +
+        "});" +
+        "" +
+        "$(document).on('click', '#play', function () { " +
+        "$('#durationdiv').addClass('wrapperduration');" +
+        "$('#durationConfig').css('pointer-events','none');" +
+        "secondsSkip = $(this).attr('duration') == '' ? 0 : parseInt($(this).attr('duration'));" +
+        "$('#play').prop('disabled',true).removeClass('btn-primary-enhanced btn-secondary-enhanced').addClass('btn-secondary-enhanced');" +
+        "$('#pause').prop('disabled',false).removeClass('btn-primary-enhanced btn-secondary-enhanced').addClass('btn-success-enhanced');" +
+        "startInterval();" +
+        "});" +
+        "" +
+        "$(document).on('click', '#pause', function () {" +
+        "$('#durationdiv').removeClass('wrapperduration');" +
+        "$('#durationConfig').css('pointer-events','');" +
+        "$('#play').prop('disabled',false).removeClass('btn-primary-enhanced btn-secondary-enhanced').addClass('btn-primary-enhanced');" +
+        "$('#pause').prop('disabled',true).removeClass('btn-primary-enhanced btn-secondary-enhanced').addClass('btn-secondary-enhanced');" +
+        "stopInterval();" +
+        "});" +
+        "" +
+        "$(document).on('click', '.forward', function() { " +
+        "secondsSkip = $(this).attr('duration') == '' ? 0 : parseInt($(this).attr('duration'));" +
+        "if (!isForward && (counter > 0 || counter <0)) {" +
+        "counter = counter + 2;" +
+        "newValue = newValue + 2;}" +
+        "else if (!isForward && counter == 0) {" +
+        "counter = counter + 1;" +
+        "newValue = newValue + 1;" +
+        "}" +
+        "isForward = true;" +
+        "DurationLapse('forward');" +
+        "if(dateRange[counter] == undefined ){ counter = tempcount; SyncF_ShowToast('success', '" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_NoAvlForwardErorMsg") + "');return false;}else{" +
+        "plantPreview('M');}" +
+        "});" +
+        "" +
+        "$(document).on('click', '.backward', function() {" +
+        "secondsSkip = $(this).attr('duration') == '' ? 0 : parseInt($(this).attr('duration'));" +
+        "if (isForward && counter > 0) {" +
+        "counter = counter - 2;" +
+        "newValue = newValue - 2;" +
+        "} else if (isForward && counter == 0) {" +
+        "counter = counter - 1;" +
+        "newValue = newValue - 1;" +
+        "}" +
+        "isForward = false;" +
+        "if(counter >= 0 ) {" +
+        "DurationLapse('backward');" +
+        "}" +
+        "if(dateRange[counter] == undefined ){ counter = tempcount; SyncF_ShowToast('success', '" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_NoAvlBackwarErorMsg") + "');return false;}else {" +
+        "plantPreview('M');}" +
+        "});" +
+        "" +
+        "$(document).on('click', '#automatic', function () { isForward = true;" +
+        "$('#play').prop('disabled',false).removeClass('btn-primary-enhanced btn-secondary-enhanced').addClass('btn-primary-enhanced');" +
+        "$('#pause').prop('disabled',false).removeClass('btn-primary-enhanced btn-secondary-enhanced').addClass('btn-primary-enhanced');" +
+        "plantPreview('A');" +
+        "resetButtons('automatic');" +
+        "changeBtnColor('#automatic', '#manual');" +
+        "changePlantMode('#automatic', '#manual');" +
+        "});" +
+        "" +
+        "$(document).on('click', '#manual', function () {" +
+        "$('#durationdiv').removeClass('wrapperduration');" +
+        "$('#durationConfig').css('pointer-events','');" +
+        "isForward = true;" +
+        "stopInterval();" +
+        "resetButtons('manual');" +
+        "changeBtnColor('#manual', '#automatic');" +
+        "changePlantMode('#manual', '#automatic');" +
+        "});" +
+        "" +
+        "function DurationLapse(mode) {" +
+        "if(secondsSkip != 0) {" +
+        "if(mode == 'forward') {" +
+        "var currenttimestampdt = new Date(dateRange[counter-1]);" +
+        "currenttimestampdt.setSeconds(currenttimestampdt.getSeconds() + secondsSkip);" +
+        "}else{" +
+        "var currenttimestampdt = new Date(dateRange[counter+1]);" +
+        "currenttimestampdt.setSeconds(currenttimestampdt.getSeconds() - secondsSkip);" +
+        "}" +
+        "if(datearangeDt.map(Number).indexOf(+currenttimestampdt) == -1){" +
+        "var closestTimestamp = mode == 'forward' ? new Date(datearangeDt.filter(x=>x>currenttimestampdt)[0]) : new Date(datearangeDtReverse.filter(x=>x<currenttimestampdt)[0]);" +
+        "counter = datearangeDt.map(Number).indexOf(+closestTimestamp);" +
+        "}else{" +
+        "counter = datearangeDt.map(Number).indexOf(+currenttimestampdt);" +
+        "}" +
+        "}" +
+        "}" +
+        "function changeBtnColor(selectorOne, selectorTwo) {" +
+        "$(selectorOne).removeClass('btn-primary-enhanced btn-secondary-enhanced btn-success-enhanced').addClass('btn-success-enhanced');" +
+        "$(selectorTwo).removeClass('btn-primary-enhanced btn-secondary-enhanced btn-success-enhanced').addClass('btn-secondary-enhanced');" +
+        "}" +
+        "" +
+        "function changePlantMode(selectorOne, selectorTwo) { };" +
+        "" +
+        "function startInterval(    )" +
+        "{interval = setInterval(function () {DurationLapse('forward');plantPreview('A');}, frameInterval * 1000); }" +
+        "" +
+        "function stopInterval() { clearInterval(interval); }" +
+        "" +
+        "function startLiveInterval() { interval = setInterval(getMaxDate, 60000); }" +
+        "" +
+        "function stopLiveInterval() { clearInterval(interval); }" +
+        "" +
+        "$(document).on('click', '#go', function () { " +
+        "" +
+        "$('#timeLineContainer').hide();" +
+        "isActiveAlarm =  0;" +
+        "resetButtons('live');" +
+        "if (livepreview) {" +
+        "SyncF_Alert('" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_DisableLiveErrorMsg") + "');" +
+        "return;" +
+        "}" +
+        "if (initializeView) {" +
+        "$('.preload').css('display', 'block');" +
+        "isForward = true;" +
+        "counter = 0;" +
+        "frameInterval = Number($('#frameInterval').val());" +
+        "startDate = formatDateToString($('#dateRange')[0].ej2_instances[0].startDate);" +
+        "endDate = formatDateToString($('#dateRange')[0].ej2_instances[0].endDate);" +
+        "$.get({" +
+        "url: '../Skids/GetDates'," +
+        "data: { startDate: startDate, endDate: endDate }, " +
+        "success: function (response) {" +
+        "updateAlarmsGrid([]);" +
+        "dateRange = response.skidDates;" +
+        "datearangeDt = dateRange.map(x => new Date(x));" +
+        "datearangeDtReverse = datearangeDt.slice().reverse();" +
+        "if (dateRange.length > 0) {" +
+        "$(\"#timeLineContainer\").show();" +
+        "resetButtons('automatic');" +
+        "changeBtnColor('#automatic', '#manual');" +
+        "$(\"#myRange\").val(0);" +
+        "plantPreview();" +
+        "}" +
+        "$('.preload').css('display', 'none');" +
+        "}," +
+        "error: function (err) { $('.preload').css('display', 'none'); }" +
+        "});" +
+        "}" +
+        "});" +
+        "" +
+        "$(document).on('click', '#live', function () { " +
+        "isActiveAlarm =  0;" +
+        "$(this).addClass('active');" +
+        "$('#stopLiveBtn').show();" +
+        "$('#timeLineContainer').hide();" +
+        "BindData('1');" +
+        "livepreview = true;" +
+        "stopInterval();" +
+        "counter = 0;" +
+        "initializeView = true;" +
+        "dateRange = [];" +
+        "resetButtons('live');" +
+        "getMaxDate();" +
+        "startLiveInterval();" +
+        "$('#go').attr('disabled', true);" +
+        "blink('#liveMode');" +
+        "$('#liveMode').css('background-color', 'green');" +
+        "$('#liveMode').css('color', 'white');" +
+        "});" +
+        "$(document).on('click', '#stopLiveBtn', function () {" +
+        "$('#live').removeClass('active');" +
+        "$(this).hide();" +
+        "livepreview = false;" +
+        "stopLiveInterval();" +
+        "let elements = document.querySelectorAll('.bm-overview-alarm-config-active');" +
+        "elements.forEach(function(element) {" +
+        "element.classList.add('bm-overview-alarm-config');element.classList.remove('bm-overview-alarm-config-active');" +
+        "});" +
+        "$('#go').attr('disabled', false);" +
+        "resetButtons('live-off');" +
+        "$('#liveMode').css('background-color', 'transparent');" +
+        "$('#liveMode').css('color', 'black');" +
+        "});" +
+        "" +
+        "function getMaxDate() {" +
+        "$('.preload').css('display', 'block');" +
+        "$.get({" +
+        "url: '../Skids/GetLatestRecordDate'," +
+        "success: function (response) {" +
+        "var maxDate = new Date(response.latestRecordDate);var maxDateString  = response.latestRecordDate;" +
+        "if (maxDate != livepreviewDate) {" +
+        "livepreviewDate = maxDate; " +
+        "var currDuration = $('#timeForPositions').html().replaceAll('/','.');" +
+        "var splitval = currDuration.split('.');" +
+        "var splitvalTime = splitval[2].split(' ');" +
+        "var actDate = splitvalTime[0] + \"-\" + splitval[1] + \"-\" + splitval[0] + \"T\" + splitvalTime[1]; " +
+        "$.get({" +
+        "url: '../Skids/GetLiveTrackings'," +
+        "data: { dateTime: response.latestRecordDate }," +
+        "success: function (trackings) {" +
+        "$('.preload').css('display', 'none');" +
+        "updateTimer(maxDateString);" +
+        "var skids = trackings.skids;" +
+        "var alarms = trackings.alarms;" +
+        "resetPositions();" +
+        "for (var i = 0; i < skids.length; i++) {" +
+        "var skid = skids[i];" +
+         "var LeadingZero = skid.position.toString().length < 3 ? skid.position.toString().padStart(3,'0'):skid.position; " +
+        " var skidPosition = $('div[position=\"' + LeadingZero + '\"]');" +
+        "if (skidPosition != undefined) {" +
+        "var skidDiv = '<div class=\"bm-overview-present-skid\">' + skid.number + '</div>';" +
+        "skidPosition.empty();" +
+        "skidPosition.append(skidDiv);" +
+        "skidPosition.attr('fkpddb', skid.fkPddb);" +
+        "}" +
+        "}" +
+        "updateAlarmsGrid(alarms.length > 0 ? alarms : []);" +
+        "}," +
+        "error: function (err) { $('.preload').css('display', 'none'); }" +
+        "});" +
+        "}" +
+        "}" +
+        "});" +
+        "}" +
+        "" +
+        "GetValue = function (id) {" +
+        "var tag = this.tagName;" +
+        "var type = this.attr(\"type\");" +
+        "if (tag == \"input\" && (type == \"checkbox\" || type == \"radio\")) {" +
+        "return this.is(':checked'); }" +
+        "" +
+        "return this.val();" +
+        "};" +
+        "" +
+        "$('.skidInfo').mousedown(function () {" +
+        "$('#tfixtures').removeClass('active');" +
+        "$('#tfixtures').removeClass('show');" +
+        "$('#tparts').removeClass('active');" +
+        "$('#tfixtures').removeClass('show');" +
+        "$('.skidInfo').removeClass('active');" +
+        "var tabName = String($(this).find('h4').html()).toLowerCase();" +
+        "$(this).addClass('active');" +
+        "$('#t' + tabName).addClass('show');" +
+        "$('#t' + tabName).addClass('active');" +
+        "});" +
+        "" +
+        "function blink(selector) {" +
+        "$(selector).fadeOut('slow', function () {" +
+        "$(this).fadeIn('slow', function () {" +
+        "if (livepreview) {" +
+        "blink(this);" +
+        "}" +
+        "});" +
+        "});" +
+        "}" +
+        "" +
+        "$(document).on('click', '.bm-overview-alarm-config-text', function () {" +
+        "if($(this).prop(\"tagName\").toLowerCase() === 'input') {;if ($(this).attr('alarm') == undefined) {" +
+       " SyncF_ShowDialog('#AlarmConfigPopup');" +
+        "$('#spotConfigLocation').val($(this).attr('id'));" +
+        "}" +
+        "}" +
+        "});" +
+        "function stopskidinterval() { " +
+        "clearInterval(skidSrhInterval);}" +
+        "" +
+        "function findDivWithSkidNumber(text) { " +
+        "var divs = document.getElementsByClassName('bm-overview-present-skid');" +
+        "for (var i = 0; i < divs.length; i++)" +
+        "{ if (divs[i].textContent.trim() === text)" +
+        "{" +
+         "return true;" +
+        "} " +
+        "}" +
+        "return false;" +
+        "}" +
+        "" +
+        "$('#btnSkidSearch').click(function()" +
+        "{" +
+        "stopskidinterval();" +
+        "var skidno = $('#txtskidno').val();" +
+        "if(skidno == ''){ SyncF_ShowToast('error', '" + _localizationService.GetLocalizedStringAsHtml("BTO_OverView_SkidnoErrorMsg") + "'); $('#txtskidno').focus(); return false;}" +
+        "if(!findDivWithSkidNumber(skidno)){ SyncF_ShowToast('error', '" + _localizationService.GetLocalizedStringAsHtml("BTO_OverView_SkidnoWarnMsg") + "'); return false;}" +
+        "var timesRun = 0;" +
+        "var skidTab = $('.bm-overview-present-skid').filter(function() {return $(this).text().trim() === $('#txtskidno').val();});var parentTabId = skidTab[0].parentNode;var TabId = $(\"a[href='#\" + parentTabId.parentNode.id+ \"']\");if(TabId.length !=0 ){document.getElementById(TabId[0].id).click();}" +
+        "var skidContainer = document.getElementById('skidContainer');conveyerSectionZoom = skidContainer.querySelectorAll('.ConveyerSection');var rectZoom = parentTabId.getBoundingClientRect(); var centerXZoom = rectZoom.left + rectZoom.width / 2;var centerYZoom = rectZoom.top + rectZoom.height / 2;var scaleFactor = 1.6;var translateX = (skidContainer.clientWidth / 2 - centerXZoom) * (scaleFactor - 1);var translateY = (skidContainer.clientHeight / 2 - centerYZoom) * (scaleFactor - 1);conveyerSectionZoom[0].style.transform = 'scale('+ scaleFactor +') translate('+translateX + 'px, ' + translateY + 'px)';" +
+        "if(isSkidBlink == 0){skidSrhInterval = setInterval(function () { timesRun += 1;if (timesRun === 5){clearInterval(skidSrhInterval);}SkidBlink(skidno);}, 1000);}" +
+        " else{skidSrhInterval = setInterval(function () { if (isSkidBlink == 0){clearInterval(skidSrhInterval);}SkidBlink(skidno);}, 1000); } });" +
+        "" +
+        "function SkidBlink(no){" +
+        "" +
+        "$('div.bm-overview-present-skid').filter(function() {return $(this).text() === no;}).addClass('blinkSvg').animate({opacity: 0.2}, 'fast', function(){    $(this).css('background-color', '#FF4500').animate({opacity: 1}, 'fast', function(){      $(this).animate({opacity: 0.2}, 'fast', function(){ $(this).css('background-color', 'green').animate({opacity: 1}, 'fast', function(){ $(this).removeClass('blinkSvg');  });  }); });});" +
+        "}" +
+        "" +
+        "function BindData(boolVal,callback) { " +
+        "tempAlaram=[]; " +
+        "$.get({" +
+        "url: '../Skids/GetOverviewPosition'," +
+        "data: { layout: layoutName }," +
+        "success: function (response) { " +
+        "tempAlaram = response.result;" +
+        "for (var i = 0; i < response.result.length; i++) { " +
+        "$('#txt0' + response.result[i].spotNumber).val(response.result[i].description);" +
+        "$('#txt0' + response.result[i].spotNumber).attr('title', response.result[i].description);" +
+        "$('#txt0' + response.result[i].spotNumber).attr('alarm', response.result[i].alarm);" +
+        "$('#txt0' + response.result[i].spotNumber).attr('idVal', response.result[i].id);" +
+        "$('#txt0' + response.result[i].spotNumber).css('color', '#212121');" +
+        "$('#txt0' + response.result[i].spotNumber).css('opacity', '1');" +
+        "$('#txt0' + response.result[i].spotNumber).css('font-size', '12pt');" +
+        "$('#txt0' + response.result[i].spotNumber).css('font-family', 'Arial, sans-serif');" +
+        "}" +
+        "if (boolVal != '1') {" +
+        "ConvertToLabel();" +
+        "}" +
+        "if (typeof callback === 'function') {callback();}" +
+        "}," +
+        "error: function (err) { }" +
+        "});" +
+        "}" +
+        "" +
+       "function SaveSpotConfig(){" +
+        "var alarmId =  $('#ddAlarms')[0].ej2_instances[0].value;" +
+        "var spotConfigDesc = $('#description').val();" +
+        "var spotConfigLocation = $('#spotConfigLocation').val();" +
+        "if (spotConfigDesc == '') return;" +
+         "$('#btnOn').attr('style', 'display:none');" +
+        "$('#btnOff').removeAttr('style');" +
+        "$.get({" +
+        "url: '../Skids/SaveSpotConfig'," +
+        "data: { alarmId: alarmId, spotConfigLocation: spotConfigLocation, spotConfigDesc: spotConfigDesc,layoutName:layoutName }," +
+        "success: function (response) {" +
+        "if (response.result == 'success') {" +
+        "SyncF_ShowToast('success', '" + _localizationService.GetLocalizedHtmlString("BTO_OverView_AddAlarms") + "');" +
+        "SyncF_HideDialog('#AlarmConfigPopup');" +
+        "$('#spotConfigDesc').val(\"\");" +
+        "BindData('0', function() { ConvertToTextBox();});" +
+        "}" +
+        "}," +
+        "error: function (err) { }" +
+        "});" +
+        "}" +
+        "$('#go').click();" +
+        "});" +
+        "" +
+        "function closeAlarms() { document.getElementById('alarmsSlider').style.width = '0'; }" +
+        "" +
+        "function OpenDurationPopup(){SyncF_ShowDialog('#durationPopup');}" +
+        "function openAlarms() {" +
+        "if ((document.getElementById('alarmsSlider').style.width == '0px') || (document.getElementById('alarmsSlider').style.width == '')) {" +
+        "if ($(window).width() < 800) document.getElementById('alarmsSlider').style.width = '70%';" +
+        "else document.getElementById('alarmsSlider').style.width = '50%';" +
+        "}" +
+        "else { closeAlarms(); }" +
+        "}" +
+        "" +
+        "function unique(list) {" +
+        "var result = [];result.splice(0, result.length);" +
+        "$.each(list, function(i, e) { if ($.inArray(e, result) == -1) result.push(e); });" +
+        "return result;" +
+        "}" +
+        "" +
+        "function removeduplicate(data) {" +
+        "var fullData = []; var shortData = [];" +
+        "fullData.splice(0, fullData.length); shortData.splice(0, shortData.length);" +
+        "$(data).each(function (i) {" +
+        "if (shortData.indexOf($(this)[0].id) === -1) {" +
+        "shortData.push($(this)[0].id);" +
+        "fullData.push($(this)[0]);" +
+        "}" +
+        "});" +
+        "return fullData;" +
+        "}" +
+        "" +
+        "function filterFunction(headerText) {" +
+        "var dropcls = headerText.getAttribute('data-headtext').replace(/ /gi, '_');" +
+        "var input, filter, ul, li, a, i;" +
+        "input = document.getElementsByClassName(headerText.className)[0];" +
+        "filter = input.value.toUpperCase();" +
+        "div = document.getElementsByClassName(\"bm-header-filter-container \" + dropcls + '')[0];" +
+        "a = div.getElementsByTagName(\"li\");" +
+        "for (i = 0; i < a.length; i++)" +
+        "{" +
+        "txtValue = a[i].textContent || a[i].innerText;" +
+        "if (txtValue.toUpperCase().indexOf(filter) > -1)" +
+        "{" +
+        "a[i].hidden = false;" +
+        "if (txtValue.toUpperCase() == '')" +
+        "{" +
+        "$(a[i]).find('input[type=checkbox]').prop('checked', false);" +
+        "}else{" +
+        "$(a[i]).find('input[type=checkbox]').prop('checked', true);" +
+        "}" +
+        "}else" +
+        "{" +
+        "$(a[i]).find('input[type=checkbox]').prop('checked', false);" +
+        "a[i].hidden = true;" +
+        "}" +
+        "}" +
+        "}" +
+        "let scrubber = document.getElementById('range');" +
+        "let tooltip = document.getElementById('tooltip');" +
+        "function showTooltip(e){" +
+        "let w = scrubber.clientWidth;" +
+        "let x = e.offsetX;" +
+        "let percents = x / w;" +
+        "let max = parseInt(scrubber.max);" +
+        "var hoverVal = Math.floor(percents * max + 0.5);" +
+        "counter = Math.round((parseFloat(hoverVal) * parseFloat(dateRange.length) / 100));" +
+        "var dtVal=dateRange[counter]!=undefined?dateRange[counter]:dateRange[counter-1];" +
+        "var dt = dtVal == undefined?AddOffSetToDate($('#hiddenTimeVal').val()): AddOffSetToDate(dtVal);" +
+        "var timstmp = formatChartData(dtVal == undefined?$('#hiddenTimeVal').val():dtVal);" +
+        "var result=timstmp.includes(':aN');" +
+        "if(!result){" +
+        "tooltip.innerHTML = `<span id = 'timstmp' >${timstmp}</span>`;}" +
+        "var val = range.value;" +
+        "if(val==hoverVal){" +
+        "$('#tooltip').css('display', 'none');" +
+        "$('.range-value span').css('opacity', '1'); " +
+        "} else{" +
+        "$('.range-value span').css('opacity', '0'); " +
+        "}" +
+        "}" +
+        "window.onmousemove = function(e) {" +
+        "let x = (e.clientX) + 'px';" +
+        "tooltip.style.left = x;}; " +
+        "function checkrangeValidate() {" +
+        " var startDate = $('#dateRange')[0].ej2_instances[0].startDate;\r\n            var endDate = $('#dateRange')[0].ej2_instances[0].endDate;\r\n\r\n            if (startDate == '' || endDate == '') {\r\n                $('#daterangealert').show();\r\n                $('#go').prop('disabled', true);\r\n            }\r\n            else {\r\n                var startTimestamp = Date.parse(startDate);\r\n                var endTimestamp = Date.parse(endDate);\r\n                if (isNaN(startTimestamp) || isNaN(endTimestamp)) {\r\n                    $('#daterangealert').show();\r\n                    $('#go').prop('disabled', true);\r\n                    return;\r\n                }\r\n                var minDate = Date.parse(\"1/1/1753 12:00:00 AM\");\r\n                var maxDate = Date.parse(\"12/31/9999 11:59:59 PM\");\r\n                if (startTimestamp < minDate || endTimestamp > maxDate) {\r\n                    $('#daterangealert').show();\r\n                    $('#go').prop('disabled', true);\r\n                    return;\r\n                }\r\n                if (endTimestamp <= startTimestamp) {\r\n                    $('#daterangealert').show();\r\n                    $('#go').prop('disabled', true);\r\n                } else {\r\n                    $('#daterangealert').hide();\r\n                    $('#go').prop('disabled', false);\r\n                }\r\n            }" +
+        "} " +
+        "" +
+        "function formatDateToString(d) {\r\n    var tsformat = '';\r\n    day = d.getDate();\r\n    month = d.getMonth() + 1;\r\n    year = d.getFullYear();\r\n    hour = d.getHours();\r\n    minute = d.getMinutes();\r\n    seconds = d.getSeconds();\r\n    tsformat = year + '/' + ('0' + month).slice(-2) + '/' + ('0' + day).slice(-2) + ' ' + ('0' + hour).slice(-2) + ':' + ('0' + minute).slice(-2) + ':' + ('0' + seconds).slice(-2);\r\n    return tsformat\r\n}" +
+        "var switchBtn = new ejs.buttons.Switch(" +
+        "{ checked: false, " +
+        "change: function () { if(switchBtn.properties.checked == true){ClickOff()}else{ClickOn()};} " +
+        "});" +
+        "switchBtn.appendTo('#chkConfigtoggle');" +
+        "function ClickOff() {" +
+        "scales = 1.00;" +
+        "$('.ConveyerSection').css('transform', `scale(${scales}, ${scales})`);" +
+        "$('.ConveyerSection').scrollTop(0);" +
+        "$('.ConveyerSection').scrollLeft(0);" +
+        "ConvertToTextBox();" +
+        "}" +
+        "" +
+        "function ClickOn() {" +
+        "ConvertToLabel();" +
+        "isOff = true;" +
+        "scales = 1.00;" +
+        "$('.ConveyerSection').css('transform', `scale(${scales}, ${scales})`);" +
+        "$('.ConveyerSection').scrollTop(0);" +
+        "$('.ConveyerSection').scrollLeft(0); " +
+        " }" +
+        "" +
+         "var switchSkidBtn = new ejs.buttons.Switch(" +
+        "{ checked: false,cssClass: 'Custom-Width', " +
+        "change: function () { if(switchSkidBtn.properties.checked == true){SkidShowOff()}else{SkidShowOn()};} " +
+        "});" +
+        "switchSkidBtn.appendTo('#chkSkidtoggle');" +
+        "switchSkidBtn.element.parentElement.setAttribute('title', '" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_PermanentBtn") + "');" +
+        "function SkidShowOn() {" +
+        "isSkidBlink = 0;" +
+        " }" +
+        "" +
+        "function SkidShowOff() {" +
+        "isSkidBlink = 1;" +
+        " }" +
+        "" +
+        "function ConvertToTextBox() { " +
+        "$('.div-toggle').show();" +
+        "document.getElementById('DivSkid').style.opacity = '1.0';" +
+        "Array.from($('.bm-overview-alarm-config-text')).forEach(function (ele) {" +
+        "$(ele).children().remove();" +
+        "if (ele.type != 'text') {" +
+        "var div = \"<input id='\" + ele.id + \"' type='text' value='\" + ele.innerHTML + \"' class='bm-overview-alarm-config-text' />\";" +
+        "if (ele.attributes.alarm != undefined) {" +
+        "var imgID = ele.attributes.idval != undefined ? ele.attributes.idval.value : '';" +
+        "div = \"<input id='\" + ele.id + \"' alarm='\" + ele.attributes.alarm.value + \"' title='\"+ ele.innerHTML + \"' style='font-size:12pt;opacity:1;width:;' idval='\" + ele.attributes.idval.value + \"' type='text' value='\" + ele.innerHTML + \"' class='bm-overview-alarm-config-text bm-overview-alarm-config'/>\";" +
+        "div += \"<a class='imgDelete' id='\" + imgID + \"' style='position:absolute;margin-left:-16px'><i class='fa fa-trash'></i></a>\";" +
+        "ele.parentNode.replaceChild($(div)[0], ele);" +
+        "$('#' + ele.id).after($(div)[1]);" +
+        "}" +
+        "else {" +
+        "ele.parentNode.replaceChild($(div)[0], ele);" +
+        "}" +
+        "}" +
+        "});" +
+        "}" +
+        "" +
+
+        "function ConvertToLabel() { " +
+        "document.getElementById('DivSkid').style.opacity = '1.0';" +
+        "document.getElementById('DivSkid').style.zIndex = '2';" +
+        "document.getElementById('DivSkid').style.position = 'absolute';" +
+        "Array.from($('.bm-overview-alarm-config-text')).forEach(function (ele) {" +
+        "if (ele.type != 'label' && ele.type != undefined) {" +
+        "var eleval = ele.value != undefined ? ele.value : '';" +
+        "var div = \"<label id='\" + ele.id + \"' class='bm-overview-alarm-config-label bm-overview-alarm-config-text'>\" + eleval + \"</label>\";" +
+        "if (ele.attributes.alarm != undefined) {" +
+        "div = \"<label id='\" + ele.id + \"' alarm='\" + ele.attributes.alarm.value + \"' title='\"+ ele.value +\"' idval='\" + ele.attributes.idval.value + \"' class='bm-overview-alarm-config-label bm-overview-alarm-config-text bm-overview-alarm-config'>\" + ele.value + \"</label>\";" +
+        "var temp = $('#' + ele.id).find($(div)[1]);" +
+        "}" +
+        "ele.parentNode.replaceChild($(div)[0], ele);" +
+        "$('.imgDelete').remove();" +
+        "}" +
+        "});" +
+        "}" +
+        "" +
+        "$('.durationskip').keypress(function(event){" +
+        "if (event.which != 8 && isNaN(String.fromCharCode(event.which))){" +
+        "event.preventDefault();" +
+        "}" +
+        "});" +
+         "" +
+         "$('.durationskip').keyup(function(event){" +
+         "$('#play').attr('duration',$('#d_play').val()); " +
+         "$('#forward').attr('duration',$('#d_backforward').val());" +
+         "$('#backward').attr('duration',$('#d_backforward').val());" +
+         "$('#fastbackward').attr('duration',$('#d_fbackforward').val());" +
+         "$('#fastforward').attr('duration',$('#d_fbackforward').val()); });" +
+         "" +
+         "var grid;" +
+         "function synfusionGridtbl(datatbl,tableId){" +
+         "if(grid != null){grid.destroy();}" +
+         "if($('#DivalarmsdataclearfieldSpan').text() != ''){$('#DivalarmsdataclearfieldSpan').text('')}" +
+         "ej.base.L10n.load({" +
+         " 'en-US': {" +
+         " pager: {" +
+         "pagerDropDown:'" + _localizationService.GetLocalizedStringAsHtml("BUM_ItemsPerPage") + "'," +
+         "currentPageInfo:'{0} " + _localizationService.GetLocalizedStringAsHtml("BUM_ofTxt") + " {1} " + _localizationService.GetLocalizedStringAsHtml("BUM_PageTxt") + "'," +
+         "totalItemsInfo:'({0} " + _localizationService.GetLocalizedStringAsHtml("BUM_ItemsTxt") + ")'," +
+         "}," +
+         "}," +
+         "});" +
+           "grid = new ej.grids.Grid({" +
+            "dataSource: datatbl," +
+             "allowTextWrap: false," +
+            "clipMode: 'EllipsisWithTooltip'," +
+            "gridLines: 'Both'," +
+            "allowFiltering: true," +
+            "emptyRecordTemplate: '#emptytemplate'," +
+            "allowSorting: true," +
+            "allowExcelExport: true," +
+            "allowPdfExport: true," +
+            "filterSettings: { type: 'Excel' }," +
+            "showColumnChooser: true," +
+            "allowPaging: true," +
+            "actionComplete:function(args){   if (args.requestType === \"filterAfterOpen\") {\r\n                           var columnObj = $('#' + tableId)[0].ej2_instances[0].getColumnByField(args.columnName);\r\n                           if (columnObj.type === \"datetime\") {\r\n                               var dateObj = document.getElementById('dateui-' + columnObj.uid)['ej2_instances'][0];\r\n                               dateObj.format = getCultureDtformat() + \" HH:mm:ss\";\r\n                           }\r\n                       } SyncF_ApplyIsFilterAlert('#Divalarmsdata','" + _localizationService.GetLocalizedStringAsHtml("BM_FilterAppliedMSG") + "');}," +
+            "locale: 'en-US'," +
+            "queryCellInfo:queryCellInfoDetail," +
+            "toolbar: [{text:'" + _localizationService.GetLocalizedStringAsHtml("BTO_PdfExportBtn") + "',id:tableId+'pdfexportid',prefixIcon : 'e-pdfexport'},{text:'" + _localizationService.GetLocalizedStringAsHtml("BTO_ExcelExportBtn") + "',id:tableId+'excelexportid',prefixIcon : 'e-excelexport'}, {text:'" + _localizationService.GetLocalizedStringAsHtml("BTO_ResetFilterBtn") + "',id:'DivalarmsdataclearFilter',prefixIcon: 'e-filter-clear'}, 'ColumnChooser','Search']," +
+            "pageSettings: { pageSizes: ['10','20', '40','60','80','100','All'], pageSize: 19 }," +
+            "columns: [" +
+            "{ field: 'messageText', headerText:'" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_MessageText") + "', textAlign: 'Center', width: 100 }," +
+            "{ field: 'timeIn', headerText: '" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_TimeIn") + "', textAlign: 'Center', width: 100,format: { type: 'date', format: getCultureDtformat() + ' HH:mm:ss' },filter: { type: 'Menu',operator: 'greaterthanorequal' } }," +
+            "{ field: 'timePLCAck', headerText: '" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_TimePLCAckColumnTxt") + "', textAlign: 'Center', width: 100,format: { type: 'date', format: getCultureDtformat() + ' HH:mm:ss' },filter: { type: 'Menu',operator: 'greaterthanorequal' } }," +
+            "{ field: 'groupText', headerText: '" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_GroupText") + "', textAlign: 'Center', width: 100 }," +
+            "{ field: 'classText', headerText: '" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_ClassTypeHTxt") + "', textAlign: 'Center', width: 100 }," +
+            "{ field: 'alarmClass', headerText: '" + _localizationService.GetLocalizedStringAsHtml("BTC_P_Id") + "', textAlign: 'Center', width: 100,visible: false }" +
+            "]" +
+            "});" +
+            "$('#Divalarmsdata').empty();" +
+            "grid.appendTo('#Divalarmsdata');" +
+            "" +
+            " grid.toolbarClick = function(args) {" +
+                "if (args.item.id === tableId + 'excelexportid')" +
+                "{" +
+                    "AddSPinner(tableId);" +
+                                "var excelExportProperties = {" +
+                                "fileName: tableId + \"_\" + new Date().toLocaleString() + '.xlsx', " +
+                                "};" +
+                                "grid.excelExport(excelExportProperties);" +
+                    "removeLoader();" +
+                "}" +
+                "if (args.item.id === tableId + 'pdfexportid')" +
+                "{" +
+                "GridPdfExport(tableId, grid);" +
+                "}" +
+                "if (args.item.id === 'DivalarmsdataclearFilter')" +
+                "{" +
+                    "grid.clearFiltering();" +
+                "}" +
+            "};" +
+            "" +
+              "function AddSPinner(tableId) {" +
+                  "$('#' + tableId).append(\"<div id='dvLoader' class='preload' style='margin:auto;z-index:1;position:absolute;left:50%;top:50%;'></div>\");" +
+               "}" +
+                "function removeLoader(){" +
+                 " $('.preload').remove();" +
+                "}" +
+
+              "" +
+               "function queryCellInfoDetail(args) {" +
+            "if(args.data.alarmClass == 2)" +
+            "{" +
+             "args.cell.classList.add('bm-overview-alarm-details');" +
+                "$('.e-row').addClass('bm-overview-alarm-details');" +
+                "}" +
+                "else if (args.data.alarmClass == 3)" +
+            "{" +
+                    "args.cell.classList.add('bm-overview-warning-details');" +
+                    "$('.e-row').addClass('bm-overview-warning-details');" +
+                "}" +
+                "else" +
+            "{" +
+                "args.cell.classList.add('text-dark');" +
+                "$('.e-row').addClass('text-dark');" +
+                "}" +
+            "}" +
+            "};" +
+            "" +
+             "$('#txtskidno').keypress(function(event) {" +
+             "var charCode = event.which;" +
+             "if(charCode > 31 && (charCode < 48 || charCode > 57)) {" +
+             "event.preventDefault();" +
+             "}" +
+             "});" +
+             "" +
+             "$('.nav-link .fa-bars').click(function()" +
+             "{" +
+             "if ($('.sidebar-collapse').length > 0) {" +
+             "$('body').removeClass('sidebar-collapse');" +
+             "}" +
+             "else" +
+             "{" +
+             "$('body').addClass('sidebar-collapse');" +
+             "}" +
+             "});" +
+             "" +
+             "$('.nav-item.has-treeview > a').on('click', function(e) {" +
+             "e.preventDefault();" +
+             "e.stopPropagation();" +
+             "$(this).parent().toggleClass('menu-open');" +
+             "});" +
+             "</script>";
+
+    #endregion Script
+}
+
+private static string GetEndDate() => DateTime.Today.AddHours(23)
+                                                    .AddMinutes(59)
+                                                    .ToString("yyyy-MM-ddTHH:mm:ss.000");
+    }
+}

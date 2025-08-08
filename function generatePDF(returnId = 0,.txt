@@ -1,0 +1,236 @@
+  function generatePDF(returnId = 0, returnDate) {
+      // Validate required data
+      if (!$('#ddlCustomer').val()) {
+          msgPopup('error', 'Please select a customer before generating PDF');
+          return;
+      }
+      if ($('#tblReturnItems tbody tr').length === 0) {
+          msgPopup('error', 'Please add at least one return item before generating PDF');
+          return;
+      }
+
+      $.ajax({
+          url: '/Billing/GetCustomerDetailsById',
+          type: 'GET',
+          data: { id: $('#ddlCustomer').val() },
+          success: function (response) {
+              const { jsPDF } = window.jspdf;
+              let doc = new jsPDF({
+                  unit: 'pt',
+                  format: 'a5',
+                  orientation: 'portrait'
+              });
+
+              // Custom size calculations
+              const pageWidth = doc.internal.pageSize.width;
+              const pageHeight = doc.internal.pageSize.height;
+              const centerX = pageWidth / 2;
+              const leftMargin = 15;
+              const rightMargin = pageWidth - 15;
+              const contentWidth = pageWidth - 30;
+
+              // Define page margins and footer position
+              const footerY = pageHeight - 50;
+              const contentMaxY = footerY - 25;
+
+              // OWNER DETAILS
+              doc.setFontSize(16).setFont('times', 'bold');
+              let ownerTitle = (OwnerDetail?.displayName || 'N/A').toUpperCase();
+              doc.text(ownerTitle, centerX, 35, { align: 'center' });
+
+              doc.setFontSize(10).setFont('times', 'normal');
+              let branchAddress = (OwnerDetail?.branchAddress || 'N/A').toUpperCase();
+              doc.text(branchAddress, centerX, 52, { align: 'center' });
+
+              let pincodeText = `Pincode: ${(OwnerDetail?.pincode || 'N/A').toUpperCase()}`;
+              doc.text(pincodeText, centerX, 68, { align: 'center' });
+
+              doc.setLineWidth(1).line(leftMargin, 80, rightMargin, 80);
+
+              // RETURN RECEIPT TITLE
+              doc.setFontSize(12).setFont('times', 'bold');
+              doc.text('RETURN RECEIPT', centerX, 95, { align: 'center' });
+
+              // CUSTOMER NAME
+              let customerName = response?.customerName || 'N/A';
+              let phoneNo = response?.phoneNumber || 'N/A';
+              let customerNameWithPhone = `${customerName} (M: ${phoneNo})`;
+
+              doc.setFontSize(10);
+              doc.setFont('times', 'bold');
+              doc.text('Name: ', leftMargin, 115);
+              doc.setFont('times', 'normal');
+              doc.text(customerNameWithPhone, leftMargin + 35, 115);
+
+              // DATE AND RETURN ID
+              doc.setFontSize(8);
+
+              // Get current date
+              let currentDate = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
+              doc.setFont('times', 'bold');
+              doc.text('Date: ', leftMargin, 133);
+              doc.setFont('times', 'normal');
+              doc.text(returnDate ? returnDate : currentDate, leftMargin + 30, 133);
+
+              // Get return ID
+              let returnNo = returnId > 0 ? returnId.toString() : $('#txtReturnIdHidden').val() || "NEW";
+              doc.setFont('times', 'bold');
+              doc.text('Return ID: ', centerX + 5, 133);
+              doc.setFont('times', 'normal');
+              doc.text(returnNo, centerX + 50, 133);
+
+              // RETURN ITEMS TABLE
+              let finalY = 150;
+
+              let returnData = [];
+              let returnTotal = 0;
+
+              // Collect return items from the modal table
+              $("#tblReturnItems tbody tr").each(function (index) {
+                  let rowIndex = $(this).data('row-index') || index;
+                  let itemName = $(this).find(`#item_${rowIndex} option:selected`).text().trim() || 'N/A';
+                  let quantity = $(this).find(`#quantity_${rowIndex}`).val() || '0';
+                  let unit = $(this).find(`#unit_${rowIndex}`).val().trim() || '';
+                  let pricePerUnit = parseFloat($(this).find(`#price_${rowIndex}`).val() || '0');
+                  let discount = parseFloat($(this).find(`#discount_${rowIndex}`).val() || '0');
+                  let totalPrice = parseFloat($(this).find(`#totalPrice_${rowIndex}`).val() || '0');
+
+                  returnTotal += totalPrice;
+
+                  // Format data for display
+                  let qtyText = quantity + (unit ? ' ' + unit : '');
+                  let priceText = pricePerUnit > 0 ? pricePerUnit.toFixed(2) : '0.00';
+                  let discountText = discount > 0 ? discount.toFixed(1) + '%' : '0%';
+                  let totalText = totalPrice.toFixed(2);
+
+                  returnData.push([
+                      (index + 1).toString(),
+                      itemName,
+                      qtyText,
+                      priceText,
+                      discountText,
+                      totalText
+                  ]);
+              });
+
+              // Add total row
+              returnData.push(['', '', '', '', 'TOTAL', `${returnTotal.toFixed(2)}/-`]);
+
+              doc.autoTable({
+                  head: [['No', 'Item Name', 'Qty', 'Price', 'Discount', 'Amount']],
+                  body: returnData,
+                  startY: finalY,
+                  theme: 'plain',
+                  headStyles: {
+                      fillColor: false,
+                      textColor: 'black',
+                      fontStyle: 'bold',
+                      lineColor: 'black',
+                      lineWidth: { top: 1, bottom: 1 },
+                      font: 'times',
+                      fontSize: 10
+                  },
+                  bodyStyles: {
+                      fillColor: false,
+                      textColor: 'black',
+                      lineWidth: 0,
+                      font: 'times',
+                      fontSize: 9
+                  },
+                  styles: {
+                      cellPadding: 2.5,
+                      lineColor: 'black',
+                      overflow: 'linebreak',
+                      font: 'times'
+                  },
+                  margin: { left: leftMargin, right: leftMargin, bottom: 25 },
+                  pageBreak: 'auto',
+                  tableWidth: contentWidth,
+                  columnStyles: {
+                      0: { halign: 'center', cellWidth: contentWidth * 0.08 },
+                      1: { halign: 'left', cellWidth: contentWidth * 0.40 },
+                      2: { halign: 'center', cellWidth: contentWidth * 0.15 },
+                      3: { halign: 'right', cellWidth: contentWidth * 0.15 },
+                      4: { halign: 'center', cellWidth: contentWidth * 0.12 },
+                      5: { halign: 'right', cellWidth: contentWidth * 0.15 }
+                  },
+                  didParseCell: function (data) {
+                      if (data.row.index === returnData.length - 1) {
+                          data.cell.styles.fontStyle = 'bold';
+                          data.cell.styles.lineWidth = { top: 1, bottom: 1 };
+                          data.cell.styles.fontSize = 10;
+                      } else if (data.section === 'body') {
+                          data.cell.styles.lineWidth = 0;
+                      }
+                      if (data.section === 'head') {
+                          if (data.column.index === 0) data.cell.styles.halign = 'center';
+                          if (data.column.index === 1) data.cell.styles.halign = 'left';
+                          if (data.column.index === 2) data.cell.styles.halign = 'center';
+                          if (data.column.index === 3) data.cell.styles.halign = 'right';
+                          if (data.column.index === 4) data.cell.styles.halign = 'center';
+                          if (data.column.index === 5) data.cell.styles.halign = 'right';
+                      }
+                  }
+              });
+
+              finalY = doc.autoTable.previous.finalY + 12;
+
+              // DEDUCTION CALCULATION
+              let finalReturnAmount = parseFloat($('#txtFinalPrice').val() || returnTotal.toString());
+              let deductionAmount = returnTotal - finalReturnAmount;
+              let deductionPercentage = returnTotal > 0 ? ((deductionAmount / returnTotal) * 100) : 0;
+
+              // RETURN SUMMARY
+              if (finalY + 60 > contentMaxY) {
+                  doc.addPage();
+                  finalY = 25;
+              }
+
+              doc.setFontSize(9).setFont('times', 'bold');
+
+              if (deductionAmount > 0) {
+                  doc.text(`RETURN ITEMS TOTAL - ${returnTotal.toFixed(2)}`, leftMargin, finalY);
+                  finalY += 16;
+
+                  doc.text(`DEDUCTION (${deductionPercentage.toFixed(1)}%) - ${deductionAmount.toFixed(2)}`, leftMargin, finalY);
+                  finalY += 16;
+              }
+
+              doc.setFontSize(12);
+              doc.text(`FINAL RETURN AMOUNT - ${finalReturnAmount.toFixed(2)}/-`, leftMargin, finalY);
+              finalY += 20;
+
+              // RETURN POLICY NOTE
+              doc.setFontSize(6).setFont('times', 'normal');
+              doc.text('NOTE: RETURN ITEMS ARE SUBJECT TO INSPECTION AND COMPANY POLICY', leftMargin, finalY);
+              finalY += 10;
+              doc.text('AMOUNT WILL BE ADJUSTED IN NEXT BILLING OR REFUNDED AS PER POLICY', leftMargin, finalY);
+
+              // ADD FOOTER TO ALL PAGES
+              const totalPages = doc.internal.getNumberOfPages();
+
+              for (let i = 1; i <= totalPages; i++) {
+                  doc.setPage(i);
+
+                  doc.setLineWidth(0.5);
+                  doc.line(leftMargin, footerY, rightMargin, footerY);
+
+                  doc.setFontSize(8).setFont('times', 'bold');
+                  doc.text('Manager Seal & Sign', leftMargin + 8, footerY + 15);
+                  doc.text('Customer Seal & Sign', rightMargin - 100, footerY + 15);
+              }
+
+              doc.setPage(totalPages);
+
+              // PRINT AND SAVE
+              doc.autoPrint();
+              window.open(doc.output('bloburl'), '_blank');
+
+              let fileName = `Return_Receipt_${returnNo}_${customerName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+          },
+          error: function (xhr, status, error) {
+              console.error('Error fetching data:', error);
+              msgPopup('error', 'An error occurred while generating the return receipt. Please try again.');
+          }
+      });
+  }

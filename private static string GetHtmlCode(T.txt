@@ -1,0 +1,296 @@
+private static string GetHtmlCode(TagHelperContent positions)
+{
+    var htmlCodeBuilder = new StringBuilder();
+    //Append styles required to run this view.
+    var converyerheight = noofrows <= Constants.FIX_HEIGHT ? "75vh" : "auto";
+    htmlCodeBuilder.AppendLine("<style>" +
+        ".cardContentArea{padding:0.5rem};" +
+        ".custom-tabs{background-color:rgba(var(--color-sf-primary));border-bottom:none;border-radius:8px 8px 0 0;padding:0.5rem}" +
+        ".custom-tabs .nav-link{color:rgba(var(--color-sf-primary));font-weight:500;border:none;border-radius:5px;margin-right:8px;transition:background-color 0.3s ease,transform 0.2s}" +
+        ".custom-tabs .nav-link:hover{background-color:rgba(255,255,255,0.1);transform:scale(1.05)}" +
+        ".custom-tabs .nav-link.active{background-color:rgba(var(--color-sf-on-primary));color:rgba(var(--color-sf-primary));font-weight:600;box-shadow:0 4px 6px rgba(0,0,0,0.1)}" +
+        ".bottom-right{position:fixed;bottom:50px;right:20px;z-index:9999}" +
+        "#live{color:white !important;border:none}" +
+        "#DivalarmsdataclearfieldSpan{margin-left:15px}" +
+        ".check-input:checked{accent-color:rgba(var(--color-sf-primary)) !important}" +
+        
+        // Enhanced control panel styling
+        ".control-panel{background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);border-radius:12px;padding:1rem;margin-bottom:1rem;box-shadow:0 4px 6px rgba(0,0,0,0.1)}" +
+        ".control-section{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem}" +
+        ".control-section:last-child{margin-bottom:0}" +
+        ".control-group{display:flex;align-items:center;gap:0.5rem;padding:0.5rem;background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}" +
+        
+        // Enhanced search bar styling
+        ".search-container{position:relative;min-width:200px}" +
+        ".search-input{padding-left:2.5rem !important;border-radius:8px;border:2px solid #e9ecef;transition:all 0.3s ease}" +
+        ".search-input:focus{border-color:rgba(var(--color-sf-primary));box-shadow:0 0 0 3px rgba(var(--color-sf-primary),0.1)}" +
+        ".search-icon{position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#6c757d;z-index:5}" +
+        ".search-btn{position:absolute;right:0.25rem;top:50%;transform:translateY(-50%);padding:0.25rem 0.5rem;border-radius:6px}" +
+        
+        // Enhanced button group styling
+        ".btn-group-enhanced{display:flex;gap:0.25rem;padding:0.25rem;background:#f8f9fa;border-radius:8px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.1)}" +
+        ".btn-enhanced{padding:0.5rem 1rem;border:none;border-radius:6px;font-weight:500;transition:all 0.2s ease;cursor:pointer;min-width:70px}" +
+        ".btn-primary-enhanced{background:rgba(var(--color-sf-primary));color:white}" +
+        ".btn-primary-enhanced:hover:not(:disabled){background:rgba(var(--color-sf-primary),0.9);transform:translateY(-1px)}" +
+        ".btn-primary-enhanced:disabled{background:#938F82;color:#ffffff;cursor:not-allowed}" +
+        ".btn-secondary-enhanced{background:#6c757d;color:white}" +
+        ".btn-secondary-enhanced:hover:not(:disabled){background:#5a6268;transform:translateY(-1px)}" +
+        ".btn-secondary-enhanced:disabled{background:#938F82;color:#ffffff;cursor:not-allowed}" +
+        ".btn-success-enhanced{background:#28a745;color:white}" +
+        ".btn-success-enhanced:hover:not(:disabled){background:#218838;transform:translateY(-1px)}" +
+        ".btn-success-enhanced:disabled{background:#938F82;color:#ffffff;cursor:not-allowed}" +
+        
+        // Live button special styling
+        ".live-btn{background:rgba(var(--color-sf-primary));color:white;border:none;border-radius:8px;padding:0.75rem 1.5rem;font-weight:600;transition:all 0.3s ease}" +
+        ".live-btn.active{background:#28a745;animation:pulse 2s infinite}" +
+        ".live-btn:hover:not(.active){background:rgba(var(--color-sf-primary),0.9)}" +
+        "@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}" +
+        
+        // Configuration section styling
+        ".config-section{display:flex;align-items:center;gap:1rem;padding:0.75rem;background:white;border-radius:8px;border-left:4px solid rgba(var(--color-sf-primary))}" +
+        ".config-label{font-weight:600;color:#495057;margin:0}" +
+        
+        // Time display enhancement
+        ".time-display{background:rgba(var(--color-sf-primary));color:white;padding:0.5rem 1rem;border-radius:8px;font-weight:600;font-size:1.1rem;box-shadow:0 2px 4px rgba(0,0,0,0.1)}" +
+        
+        // Toggle switch styling
+        ".Custom-Width{width:30px !important;height:20px !important}" +
+        ".bootstrap-switch-id-chktoggle{height:34px;margin-left:20px}" +
+        
+        // Existing styles (keeping all original functionality)
+        ".bm-overview-disable-pointer-events{pointer-events:auto}" +
+        ".bm-overview-bm-overview-live-mode-stop{opacity:1!important}" +
+        ".bm-overview-alarm-config{padding-left:25px;background:url(\"../bm-template/images/alarm_config.png\") no-repeat left;background-size:20px;text-indent:100%;white-space:nowrap;overflow:hidden}" +
+        ".bm-overview-alarm-config-active{padding-left:25px;background:url(\"../bm-template/images/alarm_config_active.png\") no-repeat left;background-size:20px;text-indent:100%;white-space:nowrap;overflow:hidden}" +
+        ".bm-overview-timer{border:.2px;background-color:#ecf0f5;display:inline;border-color:#000;padding:0 0 0 10px;border-style:solid;border-radius:4px;position:absolute;z-index:2}" +
+        ".bm-overview-timer-text{font-size:2rem;font-weight:600;margin-right:8px}" +
+        ".bm-overview-alarm-config-text{position:relative;background-color:transparent;border-color:#e0e0e0;font-weight:500!important;width:calc(100%/19);min-height:15.4px!important;opacity:.2;color:#212121;font-size:11pt!important;font-family:Arial,sans-serif;pointer-events:auto}" +
+        ".bm-overview-alarm-config-label{margin-bottom:5.8px!important;color:#212121;opacity:1;font-size:14pt;font-family:Arial,sans-serif}" +
+        ".bm-overview-live-mode{width:30px;height:30px}" +
+        ".alarm{background-color:#f13c3c;color:#fff;font-size:11px;padding-left:15px;padding-top:6px;padding-bottom:6px;border-bottom-width:1px;border-bottom-color:#fff;border-bottom-style:solid;margin:0}" +
+        "#resize{background-color:#ccc;position:absolute;left:0;width:4px;height:100%;cursor:w-resize}" +
+        "#alarmsSlider{position:fixed;height:100%;width:0;right:0;top:0;background-color:#fff}" +
+        ".Conveyer{width:100%;overflow:hidden;cursor:pointer}" +
+        ".Conveyer .ConveyerSection{width:100%;height:" + converyerheight + ";transform-origin:0 0}" +
+        ".bm-overview-alarm-details{background-color:red!important;color:#fff}" +
+        ".bm-overview-warning-details{background-color:orange!important;color:#fff}" +
+        ".bm-overview-empty-skid{height:100%;width:100%;text-align:center;background-color:transparent;padding:2px}" +
+        ".bm-overview-present-skid{background-color:green;color:#fff;text-align:center;height:100%;width:100%;padding:2px}" +
+        ".blank-height{color:#f8f9fa;margin-bottom:.5rem}" +
+        ".blank-height::before{content:'Blank'}" +
+        "#skid-details-container{position:relative;background:#fff;margin:1rem;padding:15px;border:1px solid #ddd;margin-top:9px}" +
+        "#skid-details-container:after,#skid-details-container:before{content:'';position:absolute;bottom:100%;left:6px;border:11px solid transparent;border-bottom-color:#ddd}" +
+        "#skid-details-container:after{left:20px;border:10px solid transparent}" +
+        ".bm-overview-player-margin{margin-right:4px}" +
+        
+        // Range slider styles
+        "input[type=range]{margin:20px 0;width:100%}" +
+        "input[type=range]:focus{outline:none}" +
+        "input[type=range]::-webkit-slider-runnable-track{width:100%;height:7px;cursor:pointer;animate:0.2s;background:#007bff;border-radius:25px}" +
+        "input[type=range]::-webkit-slider-thumb{height:20px;width:20px;border-radius:50%;background:#fff;box-shadow:0 0 4px 0 rgba(0,0,0,1);cursor:pointer;-webkit-appearance:none;margin-top:-8px}" +
+        "input[type=range]:focus::-webkit-slider-runnable-track{background:#007bff}" +
+        ".range-wrap{width:90%;position:relative}" +
+        ".range-value{position:absolute;top:-37%;margin-left:2px}" +
+        ".range-value span{width:124px;height:24px;line-height:24px;text-align:center;background:#007bff;color:#fff;font-size:12px;display:block;position:absolute;left:50%;transform:translate(-50%,0);border-radius:6px}" +
+        ".range-value span:before{content:'';position:absolute;width:0;height:0;border-top:10px solid #007bff;border-left:5px solid transparent;border-right:5px solid transparent;top:100%;left:50%;margin-left:-5px;margin-top:-1px}" +
+        "#tooltip{display:none;position:relative}" +
+        "#tooltip{position:fixed;overflow:hidden;width:124px;height:25px;line-height:20px;text-align:center;background:#007bff;color:#fff;font-size:12px;transform:translate(-50%,0);border-radius:6px;bottom:5.5%}" +
+        "#tooltip::before{content:\" \";position:absolute;width:0;height:0;border-top:10px solid #007bff;border-left:5px solid transparent;border-right:5px solid transparent;margin-bottom:5rem;left:50%;margin-left:-5px;margin-top:25px}" +
+        ".wrapperduration{cursor:not-allowed}" +
+        "i{transition:transform 0.2s ease-in-out}" +
+        "i:hover{transform:scale(1.2)}" +
+        
+        // Input outline styles (keeping original)
+        "*:not(#dateRange) .e-outline.e-input,*:not(#dateRange) .e-outline.e-input-group input.e-input,*:not(#dateRange) .e-outline.e-input-group input,*:not(#dateRange) .e-outline.e-input-group.e-control-wrapper input.e-input,*:not(#dateRange) .e-outline.e-input-group.e-control-wrapper input,*:not(#dateRange) .e-outline.e-float-input input.e-input,*:not(#dateRange) .e-outline.e-float-input input,*:not(#dateRange) .e-outline.e-float-input.e-control-wrapper input.e-input,*:not(#dateRange) .e-outline.e-float-input.e-control-wrapper input,*:not(#dateRange) .e-outline.e-input-group:not(.e-float-icon-left) input.e-input:focus,*:not(#dateRange) .e-outline.e-input-group.e-control-wrapper:not(.e-float-icon-left) input.e-input:focus,*:not(#dateRange) .e-outline.e-float-input.e-control-wrapper:not(.e-float-icon-left) input:focus,*:not(#dateRange) .e-outline.e-float-input:not(.e-float-icon-left) input:focus,*:not(#dateRange) .e-outline.e-float-input.e-control-wrapper:not(.e-float-icon-left).e-input-focus input,*:not(#dateRange) .e-outline.e-float-input:not(.e-float-icon-left).e-input-focus input,*:not(#dateRange) .e-outline.e-input-group:not(.e-float-icon-left).e-input-focus input.e-input,*:not(#dateRange) .e-outline.e-input-group.e-control-wrapper:not(.e-float-icon-left).e-input-focus input.e-input{box-sizing:border-box;padding:10px 12px 9px 30px}" +
+        "</style>");
+
+    //Append Alarms slider view.
+    #region Alarms Slider
+    htmlCodeBuilder.AppendLine("<div id=\"alarmsSlider\" class=\"nav-tabs-custom pt-5\" style=\"z-index:95\">" +
+        "<div id=\"resize\"></div>" +
+        "<div class=\"col-lg-1 col-md-12 col-sm-1 mt-3\">" +
+        "<a href=\"javascript:void(0)\" class=\"ml-4\" onclick=\"closeAlarms()\" >" +
+        "<i class=\"fa fa-times-circle\" style=\"color:black;font-size: 25px;\"></i>" +
+        "</a>" +
+        "</div>" +
+        "<div class=\"table-responsive mt-1\" id=\"Divalarmsdata\" style=\"margin-left:10px;overflow-y:auto;\">" +
+        "</div>" +
+        "</div>");
+    #endregion Alarms Slider
+
+    #region Enhanced Skid Player
+    htmlCodeBuilder.AppendLine("<div class=\"e-card mb-3\">" +
+        "<div class=\"cardHeaderArea\">" +
+        "<label>" + _localizationService.GetLocalizedStringAsHtml("BTO_Overviewtxt") + "</label>" +
+        "</div>" +
+        "<div class=\"cardContentArea\">" +
+        "<div class=\"control-panel\">" +
+        
+        // First control section - Live, Date Range, Start
+        "<div class=\"control-section\">" +
+        "<div class=\"control-group\">" +
+        "<button class=\"live-btn\" id=\"live\"><i class=\"fa-regular fa-circle-dot p-0 m-o\"></i> &nbsp;" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_Live") + "</button>" +
+        "<button class=\"e-btn\" id=\"stopLiveBtn\" style=\"display:none\"><i class=\"fas fa-times-circle\"></i></button>" +
+        "</div>" +
+        "<input type=\"hidden\" value='" + _interval + "'  id=\"frameInterval\">" +
+        "<div class=\"control-group\" style=\"flex:1\">" +
+        "<input class=\"\" id=\"dateRange\" max=\"9999-12-31T23:59\" placeholder=\" " + _localizationService.GetLocalizedStringAsHtml("BTO_SelectRange") + "\" type=\"datetime-local\" data-val=\"true\" data-val-required=\"The EndTime field is required.\" name=\"EndTime\" value=\"" + GetEndDate() + "\">" +
+        "</div>" +
+        "<div class=\"control-group\">" +
+        "<button type=\"button\" id=\"go\" class=\"e-btn e-primary sf-bg-Primary\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_StartBtn") + "</button>" +
+        "</div>" +
+        "<div class=\"control-group\">" +
+        "<a onclick=\"openAlarms()\" style=\"cursor: pointer\" title=\"Open Alarms\">" +
+        "<img src=\"../bm-template/images/alarms.png\" height=\"40\" width=\"40\" />" +
+        "</a>" +
+        "</div>" +
+        "</div>" +
+        
+        // Second control section - Playback controls
+        "<div class=\"control-section\">" +
+        "<div class=\"control-group\">" +
+        "<div class=\"btn-group-enhanced\">" +
+        "<button type=\"button\" class=\"btn-enhanced btn-primary-enhanced\" id=\"play\" duration=\"0\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_PlayBtn") + "</button>" +
+        "<button type=\"button\" class=\"btn-enhanced btn-secondary-enhanced\" id=\"automatic\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_AutomaticBtn") + "</button>" +
+        "<button type=\"button\" class=\"btn-enhanced btn-primary-enhanced\" id=\"pause\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_PauseBtn") + "</button>" +
+        "</div>" +
+        "</div>" +
+        "<div class=\"control-group\">" +
+        "<div class=\"btn-group-enhanced\">" +
+        "<button type=\"button\" class=\"btn-enhanced btn-primary-enhanced backward\" id=\"fastbackward\" duration=\"2\"><<</button>" +
+        "<button type=\"button\" class=\"btn-enhanced btn-primary-enhanced backward\" id=\"backward\" duration=\"0\"><</button>" +
+        "<button type=\"button\" class=\"btn-enhanced btn-secondary-enhanced\" id=\"manual\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_ManualBtn") + "</button>" +
+        "<button type=\"button\" class=\"btn-enhanced btn-primary-enhanced forward\" id=\"forward\" duration=\"0\">></button>" +
+        "<button type=\"button\" class=\"btn-enhanced btn-primary-enhanced forward\" id=\"fastforward\" duration=\"2\">>>></button>" +
+        "</div>" +
+        "</div>" +
+        "<div class=\"control-group\">" +
+        "<a data-toggle=\"modal\" title=\"" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_DurationConfigTitle") + " \" onclick=\"OpenDurationPopup()\" id=\"durationConfig\" ><i class=\"fa-regular fa-clock fa-2x\"></i></a>" +
+        "</div>" +
+        "<div class=\"config-section\" " + _writableAccess + ">" +
+        "<label class=\"config-label\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_ConfigurationTxt") + "</label>" +
+        "<input type=\"checkbox\" name=\"chkConfig\" id=\"chkConfigtoggle\">" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "<div id=\"durationPopup\"></div>" +
+        "<div id=\"durationPopupContent\" class=\"p-2\">" +
+        "<div class=\"row\">" +
+        "<div class=\"col-7\">" +
+        "<label style=\"font-size:14px;\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_AutomaticBtn") + ':' + "</label>" +
+        "</div>" +
+        "<div class=\"col-5 input-icons\">" +
+        "<i class=\"fa-solid fa-stopwatch\" style=\"padding-top: 12px;\"></i>" +
+        "<input id=\"d_play\" type=\"text\" class=\" durationskip\" maxlength=\"5\" placeholder='" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SecTxt") + "' autocomplete=\"off\" />" +
+        "</div>" +
+        "</div>" +
+        "<div class=\"row\">" +
+        "<div class=\"col-7 mt-2\">" +
+        "<label style=\"font-size:14px;\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SpeedTxt") + ' ' + '1' + ':' + "</label>" +
+        "</div>" +
+        "<div class=\"col-5 mt-2 input-icons\">" +
+        "<i class=\"fa-solid fa-stopwatch\" style=\"padding-top: 12px;\"></i>" +
+        "<input id=\"d_backforward\" type=\"text\" class=\" durationskip\" maxlength=\"5\" placeholder='" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SecTxt") + "' autocomplete=\"off\" />" +
+        "</div>" +
+        "</div>" +
+        "<div class=\"row\">" +
+        "<div class=\"col-7 mt-2\">" +
+        "<label style=\"font-size:14px;\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SpeedTxt") + ' ' + '2' + ':' + " </label>" +
+        "</div>" +
+        "<div class=\"col-5 mt-2 input-icons\">" +
+        "<i class=\"fa-solid fa-stopwatch\" style=\"padding-top: 12px;\"></i>" +
+        "<input id=\"d_fbackforward\" type=\"text\" class=\" durationskip\" maxlength=\"5\" placeholder='" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SecTxt") + "' autocomplete=\"off\"  />" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "</div>");
+    #endregion Enhanced Skid Player
+
+    #region DateRange Validation
+    htmlCodeBuilder.AppendLine("<div class='row' id='daterangealert' style='position: relative;left: 154px;top: -8px;height: 26px;'>" +
+        "<div class='col-lg-12 col-md-12 col-sm-12'>" +
+        "<span style = 'color:red'><b><i class='fa-solid fa-circle-xmark'></i>" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_DatevalidationMsg") + "</b></span>" +
+        "</div>" +
+        "</div>");
+    #endregion DateRange Validation
+
+    #region Enhanced Skid Details
+    htmlCodeBuilder.AppendLine("<div class=\"row\" id=\"skidDetails\">" +
+        "<div class=\"col-11\" style=\"position:absolute;z-index:2;\">" +
+        "<div class=\"control-panel\">" +
+        "<div class=\"control-section\">" +
+        "<div class=\"time-display\" id=\"timeForPositions\"></div>" +
+        "<input type='hidden' id='hiddenTimeVal'/>" +
+        "<div class=\"search-container\">" +
+        "<i class=\"fa-solid fa-magnifying-glass search-icon\"></i>" +
+        "<input type='text' id='txtskidno' class='form-control search-input' placeholder='" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SkidnoTxt") + "' />" +
+        "<button id='btnSkidSearch' class='btn btn-primary search-btn' title='" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SearchskidBtn") + "'>" +
+        "<i class='fa-solid fa-search'></i>" +
+        "</button>" +
+        "</div>" +
+        "<div class=\"control-group chkSkidtoggleIntrojs\">" +
+        "<input type=\"checkbox\" name=\"chkConfig\" id=\"chkSkidtoggle\" class=\"\">" +
+        "</div>" +
+        "<div class=\"control-group\">" +
+        "<button class=\"e-btn e-primary bottom-right\" onclick=\"ResetLayout()\" title=\"Reset Layout\"><i class=\"fa-solid fa-rotate\"></i></button>" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "<div class=\"row\" id=\"skidDetailTable\">" +
+        "<table class=\"table table-bordered\" id=\"skid-details-container\" style=\"background-color:whitesmoke;\">" +
+        "<tbody>" +
+        "<tr>" +
+        "<th scope=\"col\" width=\"40%\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_SkidnumberTxt") + ":" + "</th>" +
+        "<th scope=\"col\" id=\"skidno\"></th>" +
+        "</tr>" +
+        "<tr>" +
+        "<th scope=\"col\" width=\"40%\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_TimeStampTxt") + ":" + "</th>" +
+        "<th scope=\"col\" id=\"clktimeStamp\"></th>" +
+        "</tr>" +
+        "<tr>" +
+        "<th scope=\"row\" width=\"40%\">" + _localizationService.GetLocalizedStringAsHtml("BTO_Overview_ProdCodeTxt") + ":" + "</th>" +
+        "<td id=\"clkProductionCode\"></td>" +
+        "</tr>" +
+        "<tr>" +
+        "<th scope=\"row\" width=\"40%\">" + _localizationService.GetLocalizedStringAsHtml("BTO_DescriptionTxt") + ":" + "</th>" +
+        "<td id=\"clkDescription\"></td>" +
+        "</tr>" +
+        "</tbody>" +
+        "</table>" +
+        "</div>" +
+        "</div>" +
+        "</div>");
+    #endregion Enhanced Skid Details
+
+    #region Conveyor
+    htmlCodeBuilder.AppendLine("<div class=\"Conveyer\">" +
+        "<div id=\"skidContainer\" class=\"row\">" +
+        "<div class=\"card-body\">" +
+        "<div class=\"ConveyerSection\" style=\"transform: scale(1.00, 1.00);\">" +
+        "<div id=\"DivSkid\">");
+    htmlCodeBuilder.AppendLine(positions.GetContent());
+    htmlCodeBuilder.AppendLine("</div>" +
+        "<div id=\"alarmsConfiguration\" class=\"div-toggle bm-overview-disable-pointer-events\">" +
+        "</div>" +
+        "</div></div></div></div>");
+    #endregion Conveyor
+
+    #region Alarm Configuration Modal
+    htmlCodeBuilder.AppendLine(
+        "<div id=\"AlarmConfigPopup\" >" +
+        "<div id=\"AlarmConfigPopupContent\" >" +
+        "<input type=\"hidden\" id=\"spotConfigLocation\" />" +
+        "<div class=\"col-lg-12 col-md-12 col-sm-12\" id=\"pview\"></div>" +
+        "<div id=\"partialdiv\"></div>" +
+        "</div>" +
+        "</div>" +
+        "<div style=\"position: absolute; bottom: 40px; margin-left: 3rem; width: 90%; cursor: pointer;\" id=\"timeLineContainer\">" +
+        "<div class=\"range-wrap\">" +
+        "<div class=\"range-value\" id=\"rangeV\"></div>" +
+        "<div id='scrubberContainer'><p id='tooltip'></p>" +
+        "<input id=\"range\" type=\"range\" min=\"0\" max=\"100\" value=\"0\" onmousemove=\"showTooltip(event);\"></div></div></div>");
+    #endregion Alarm Configuration Modal
+
+    return htmlCodeBuilder.ToString();
+}
